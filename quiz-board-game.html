@@ -1,0 +1,1061 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quiz Board Game</title>
+<style>
+  :root {
+    --bg: #0f1117;
+    --surface: #1a1d27;
+    --surface2: #22263a;
+    --surface3: #2a2f47;
+    --border: rgba(255,255,255,0.08);
+    --border2: rgba(255,255,255,0.15);
+    --text: #f0f2ff;
+    --text2: #9aa3c8;
+    --text3: #5c6494;
+    --accent: #7c6cfc;
+    --accent2: #5a4dd6;
+    --gold: #f5a623;
+    --gold2: #d4891a;
+    --green: #2dd4a0;
+    --red: #fc6c6c;
+    --blue: #60a5fa;
+
+    --c30: #2563eb;
+    --c50: #7c3aed;
+    --c70: #db7706;
+    --c100: #dc2626;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', 'Noto Sans Thai', sans-serif; min-height: 100vh; }
+  
+  /* PAGE SYSTEM */
+  .page { display: none; min-height: 100vh; }
+  .page.active { display: flex; flex-direction: column; }
+
+  /* LAUNCH PAGE */
+  #page-launch { padding: 2rem; max-width: 700px; margin: 0 auto; width: 100%; }
+  .launch-header { text-align: center; margin-bottom: 2.5rem; padding-top: 1rem; }
+  .launch-header h1 { font-size: 2.4rem; font-weight: 700; letter-spacing: -0.02em; }
+  .launch-header h1 span { color: var(--accent); }
+  .launch-header p { color: var(--text2); margin-top: 0.4rem; font-size: 0.95rem; }
+  .launch-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 1.5rem; margin-bottom: 1.25rem; }
+  .launch-card h3 { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text3); margin-bottom: 1rem; }
+  .qset-select { width: 100%; background: var(--surface2); border: 1px solid var(--border2); color: var(--text); border-radius: 10px; padding: 0.7rem 1rem; font-size: 1rem; outline: none; appearance: none; cursor: pointer; }
+  .qset-select:focus { border-color: var(--accent); }
+  .team-count-row { display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem; }
+  .team-count-row label { color: var(--text2); font-size: 0.9rem; flex-shrink: 0; }
+  .count-btns { display: flex; gap: 0.5rem; }
+  .count-btn { width: 36px; height: 36px; border-radius: 8px; border: 1px solid var(--border2); background: var(--surface2); color: var(--text); font-size: 1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.15s; }
+  .count-btn.active, .count-btn:hover { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .team-names-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; }
+  .team-name-input { background: var(--surface2); border: 1px solid var(--border); color: var(--text); border-radius: 8px; padding: 0.5rem 0.75rem; font-size: 0.9rem; outline: none; transition: border-color 0.15s; }
+  .team-name-input:focus { border-color: var(--accent); }
+  .team-name-wrap { position: relative; }
+  .team-dot { width: 8px; height: 8px; border-radius: 50%; position: absolute; left: 0.75rem; top: 50%; transform: translateY(-50%); }
+  .team-name-input.with-dot { padding-left: 1.75rem; }
+  .btn-primary { width: 100%; padding: 0.9rem; background: var(--accent); color: #fff; border: none; border-radius: 12px; font-size: 1.1rem; font-weight: 600; cursor: pointer; transition: all 0.2s; margin-top: 0.5rem; }
+  .btn-primary:hover { background: var(--accent2); transform: translateY(-1px); }
+  .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+  .btn-secondary { padding: 0.6rem 1.2rem; background: transparent; color: var(--text2); border: 1px solid var(--border2); border-radius: 8px; font-size: 0.9rem; cursor: pointer; transition: all 0.15s; }
+  .btn-secondary:hover { background: var(--surface2); color: var(--text); }
+  .launch-nav { display: flex; justify-content: flex-end; margin-bottom: 1.5rem; }
+
+  /* SETTINGS PAGE */
+  #page-settings { padding: 0; }
+  .settings-layout { display: flex; height: 100vh; }
+  .settings-sidebar { width: 220px; background: var(--surface); border-right: 1px solid var(--border); padding: 1.5rem 1rem; flex-shrink: 0; }
+  .settings-sidebar h2 { font-size: 1rem; font-weight: 600; padding: 0.5rem 0.75rem; color: var(--text2); }
+  .sidebar-item { display: flex; align-items: center; gap: 0.5rem; padding: 0.6rem 0.75rem; border-radius: 8px; cursor: pointer; color: var(--text2); font-size: 0.9rem; transition: all 0.15s; }
+  .sidebar-item:hover, .sidebar-item.active { background: var(--surface2); color: var(--text); }
+  .sidebar-item svg { width: 18px; height: 18px; opacity: 0.7; }
+  .settings-content { flex: 1; padding: 2rem; overflow-y: auto; }
+  .settings-content h2 { font-size: 1.3rem; font-weight: 600; margin-bottom: 1.5rem; }
+  .qset-list { display: grid; gap: 0.75rem; }
+  .qset-item { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1rem 1.25rem; display: flex; align-items: center; justify-content: space-between; }
+  .qset-item-info h4 { font-size: 0.95rem; font-weight: 500; }
+  .qset-item-info p { font-size: 0.8rem; color: var(--text3); margin-top: 2px; }
+  .qset-item-actions { display: flex; gap: 0.5rem; }
+  .btn-icon { width: 32px; height: 32px; border-radius: 8px; border: 1px solid var(--border2); background: transparent; color: var(--text2); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.15s; }
+  .btn-icon:hover { background: var(--surface2); color: var(--text); }
+  .btn-icon.danger:hover { background: rgba(252,108,108,0.15); color: var(--red); border-color: var(--red); }
+  .settings-topbar { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1.5rem; }
+  .settings-topbar h2 { margin: 0; flex: 1; }
+  .btn-small { padding: 0.45rem 0.9rem; border-radius: 8px; border: 1px solid var(--border2); background: var(--surface2); color: var(--text); font-size: 0.85rem; cursor: pointer; display: flex; align-items: center; gap: 0.4rem; transition: all 0.15s; }
+  .btn-small:hover { background: var(--surface3); }
+  .btn-small.accent { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .btn-small.accent:hover { background: var(--accent2); }
+  .tag { display: inline-flex; align-items: center; gap: 3px; padding: 2px 8px; border-radius: 20px; font-size: 0.75rem; font-weight: 500; }
+  .tag-30 { background: rgba(37,99,235,0.2); color: #60a5fa; }
+  .tag-50 { background: rgba(124,58,237,0.2); color: #a78bfa; }
+  .tag-70 { background: rgba(219,119,6,0.2); color: #fbbf24; }
+  .tag-100 { background: rgba(220,38,38,0.2); color: #fca5a5; }
+  .empty-state { text-align: center; padding: 3rem; color: var(--text3); }
+  .empty-state svg { width: 48px; height: 48px; margin: 0 auto 1rem; opacity: 0.3; }
+
+  /* MODAL */
+  .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); display: flex; align-items: center; justify-content: center; z-index: 100; backdrop-filter: blur(4px); }
+  .modal { background: var(--surface); border: 1px solid var(--border2); border-radius: 16px; padding: 1.75rem; width: 560px; max-width: 95vw; max-height: 92vh; overflow-y: auto; }
+  .modal h3 { font-size: 1.1rem; font-weight: 600; margin-bottom: 1.25rem; }
+  .modal-footer { display: flex; gap: 0.75rem; justify-content: flex-end; margin-top: 1.25rem; padding-top: 1rem; border-top: 1px solid var(--border); }
+  .form-group { margin-bottom: 1rem; }
+  .form-group label { display: block; font-size: 0.85rem; color: var(--text2); margin-bottom: 0.4rem; }
+  .form-input { width: 100%; background: var(--surface2); border: 1px solid var(--border2); color: var(--text); border-radius: 8px; padding: 0.6rem 0.75rem; font-size: 0.9rem; outline: none; transition: border-color 0.15s; }
+  .form-input:focus { border-color: var(--accent); }
+  textarea.form-input { resize: vertical; min-height: 80px; font-family: inherit; }
+  .score-options { display: flex; gap: 0.5rem; }
+  .score-option { flex: 1; padding: 0.5rem; border-radius: 8px; border: 1px solid var(--border2); background: var(--surface2); color: var(--text2); cursor: pointer; text-align: center; font-size: 0.9rem; transition: all 0.15s; }
+  .score-option.selected { border-color: var(--accent); background: rgba(124,108,252,0.2); color: var(--text); }
+  .q-list { display: grid; gap: 0.5rem; max-height: 300px; overflow-y: auto; }
+  .q-list-item { background: var(--surface2); border-radius: 8px; padding: 0.6rem 0.75rem; display: flex; align-items: flex-start; gap: 0.75rem; }
+  .q-list-item-main { flex: 1; font-size: 0.85rem; }
+  .q-list-item-main .q-text { color: var(--text); margin-bottom: 2px; }
+  .q-list-item-main .a-text { color: var(--text3); font-size: 0.8rem; }
+  .divider { border: none; border-top: 1px solid var(--border); margin: 1.25rem 0; }
+
+  /* GAME PAGE */
+  #page-game { flex-direction: row; height: 100vh; overflow: hidden; }
+  .game-board { flex: 1; display: flex; flex-direction: column; padding: 1.25rem; overflow: hidden; }
+  .game-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; }
+  .game-header h2 { font-size: 1rem; font-weight: 500; color: var(--text2); }
+  .turn-badge { background: var(--surface2); border: 1px solid var(--border2); border-radius: 20px; padding: 0.3rem 0.9rem; font-size: 0.85rem; display: flex; align-items: center; gap: 0.5rem; }
+  .turn-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); box-shadow: 0 0 6px var(--green); }
+  .categories-header { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.5rem; margin-bottom: 0.5rem; }
+  .cat-head { text-align: center; font-size: 0.8rem; font-weight: 600; padding: 0.5rem; border-radius: 8px; }
+  .cat-30 { background: rgba(37,99,235,0.15); color: #60a5fa; }
+  .cat-50 { background: rgba(124,58,237,0.15); color: #a78bfa; }
+  .cat-70 { background: rgba(219,119,6,0.15); color: #fbbf24; }
+  .cat-100 { background: rgba(220,38,38,0.15); color: #fca5a5; }
+  .board-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.5rem; flex: 1; }
+  .board-cell { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 1.4rem; font-weight: 700; transition: all 0.2s; position: relative; min-height: 70px; }
+  .board-cell:hover:not(.used):not(.revealed) { transform: scale(1.03); border-color: var(--border2); background: var(--surface2); }
+  .board-cell.score-30 { color: #60a5fa; }
+  .board-cell.score-50 { color: #a78bfa; }
+  .board-cell.score-70 { color: #fbbf24; }
+  .board-cell.score-100 { color: #fca5a5; }
+  .board-cell.used { opacity: 0.25; cursor: not-allowed; pointer-events: none; }
+  .board-cell.revealed { opacity: 0.3; cursor: not-allowed; pointer-events: none; border-style: dashed; }
+  .board-cell.used::after { content: '✓'; position: absolute; font-size: 1.2rem; color: var(--green); }
+
+  /* SCOREBOARD SIDEBAR */
+  .score-sidebar { width: 220px; background: var(--surface); border-left: 1px solid var(--border); padding: 1.25rem; display: flex; flex-direction: column; gap: 0.6rem; overflow-y: auto; flex-shrink: 0; }
+  .score-sidebar h3 { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text3); margin-bottom: 0.25rem; }
+  .score-card { background: var(--surface2); border: 1px solid var(--border); border-radius: 12px; padding: 0.75rem 1rem; cursor: pointer; transition: all 0.15s; }
+  .score-card:hover { border-color: var(--border2); }
+  .score-card.current-turn { border-color: var(--accent); background: rgba(124,108,252,0.1); }
+  .score-card-top { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem; }
+  .team-color { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+  .score-card-name { font-size: 0.85rem; font-weight: 500; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .score-val { font-size: 1.6rem; font-weight: 700; color: var(--text); }
+  .score-rank { font-size: 0.7rem; color: var(--text3); }
+  .btn-end-game { margin-top: auto; padding: 0.6rem; background: rgba(252,108,108,0.1); border: 1px solid rgba(252,108,108,0.3); color: var(--red); border-radius: 8px; font-size: 0.85rem; cursor: pointer; transition: all 0.15s; }
+  .btn-end-game:hover { background: rgba(252,108,108,0.2); }
+
+  /* QUESTION MODAL */
+  .q-modal { background: var(--surface); border: 1px solid var(--border2); border-radius: 20px; padding: 2rem; width: 640px; max-width: 95vw; max-height: 90vh; overflow-y: auto; }
+  .q-modal-score-badge { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.4rem 1rem; border-radius: 20px; font-size: 0.9rem; font-weight: 600; margin-bottom: 1.25rem; }
+  .q-modal-question { font-size: 1.2rem; font-weight: 500; line-height: 1.6; margin-bottom: 1.5rem; }
+  .answer-section { background: var(--surface2); border-radius: 12px; padding: 1rem 1.25rem; }
+  .answer-section.hidden-ans { filter: blur(6px); user-select: none; pointer-events: none; }
+  .answer-label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text3); margin-bottom: 0.4rem; }
+  .answer-text { font-size: 1rem; color: var(--green); font-weight: 500; }
+  .q-modal-actions { display: flex; gap: 0.75rem; margin-top: 1.25rem; flex-wrap: wrap; }
+  .score-edit-section { background: var(--surface2); border-radius: 12px; padding: 1rem 1.25rem; margin-top: 1rem; }
+  .score-edit-title { font-size: 0.8rem; color: var(--text2); margin-bottom: 0.75rem; }
+  .score-display { font-size: 2rem; font-weight: 700; text-align: center; margin: 0.5rem 0; color: var(--gold); }
+  .score-multipliers { display: flex; gap: 0.5rem; justify-content: center; margin-bottom: 0.75rem; }
+  .mult-btn { padding: 0.4rem 0.9rem; border-radius: 8px; border: 1px solid var(--border2); background: var(--surface3); color: var(--text2); cursor: pointer; font-size: 0.85rem; transition: all 0.15s; }
+  .mult-btn:hover { background: var(--surface); color: var(--text); }
+  .mult-btn.active { border-color: var(--gold); color: var(--gold); background: rgba(245,166,35,0.1); }
+  .team-select-section { margin-top: 0.75rem; }
+  .team-select-title { font-size: 0.8rem; color: var(--text2); margin-bottom: 0.5rem; }
+  .team-select-grid { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+  .team-select-btn { padding: 0.4rem 0.8rem; border-radius: 20px; border: 1px solid var(--border2); background: var(--surface3); color: var(--text2); cursor: pointer; font-size: 0.8rem; transition: all 0.15s; }
+  .team-select-btn.selected { color: #fff; border-color: transparent; }
+  .btn-award { padding: 0.6rem 1.2rem; border-radius: 10px; background: var(--green); color: #000; border: none; font-size: 0.9rem; font-weight: 600; cursor: pointer; transition: all 0.15s; }
+  .btn-award:hover { opacity: 0.85; }
+  .btn-reveal { padding: 0.6rem 1.2rem; border-radius: 10px; background: var(--gold); color: #000; border: none; font-size: 0.9rem; font-weight: 600; cursor: pointer; transition: all 0.15s; }
+  .btn-reveal:hover { opacity: 0.85; }
+  .btn-close-q { padding: 0.6rem 1.2rem; border-radius: 10px; background: transparent; color: var(--text2); border: 1px solid var(--border2); font-size: 0.9rem; cursor: pointer; transition: all 0.15s; }
+  .btn-close-q:hover { background: var(--surface2); }
+
+  /* TEAM COLORS */
+  .tc-0 { background: #7c6cfc; }
+  .tc-1 { background: #2dd4a0; }
+  .tc-2 { background: #f5a623; }
+  .tc-3 { background: #fc6c6c; }
+  .tc-4 { background: #60a5fa; }
+
+  /* END GAME */
+  #page-end { align-items: center; justify-content: center; padding: 2rem; }
+  .end-card { background: var(--surface); border: 1px solid var(--border2); border-radius: 20px; padding: 2.5rem; max-width: 500px; width: 100%; text-align: center; }
+  .end-card h1 { font-size: 1.8rem; font-weight: 700; margin-bottom: 0.5rem; }
+  .winner-badge { background: rgba(245,166,35,0.15); border: 1px solid var(--gold); border-radius: 12px; padding: 1rem; margin: 1.25rem 0; }
+  .winner-badge .w-label { font-size: 0.75rem; color: var(--gold2); text-transform: uppercase; letter-spacing: 0.1em; }
+  .winner-badge .w-name { font-size: 1.6rem; font-weight: 700; color: var(--gold); }
+  .winner-badge .w-score { font-size: 1rem; color: var(--text2); }
+  .final-scores { display: grid; gap: 0.5rem; margin-bottom: 1.5rem; }
+  .final-score-row { display: flex; align-items: center; justify-content: space-between; padding: 0.6rem 0.75rem; background: var(--surface2); border-radius: 8px; font-size: 0.9rem; }
+  .final-score-row .rank { color: var(--text3); width: 20px; }
+  .final-score-row .name { flex: 1; margin-left: 0.75rem; }
+  .final-score-row .pts { font-weight: 600; }
+
+  /* SCORE EDIT MODAL */
+  .score-adjust-row { display: flex; align-items: center; gap: 0.75rem; }
+  .score-adjust-row input[type=number] { width: 100px; background: var(--surface2); border: 1px solid var(--border2); color: var(--text); border-radius: 8px; padding: 0.5rem 0.75rem; font-size: 1rem; outline: none; }
+  .score-adjust-row input:focus { border-color: var(--accent); }
+
+  /* TOAST */
+  .toast { position: fixed; bottom: 1.5rem; left: 50%; transform: translateX(-50%) translateY(20px); background: var(--surface2); border: 1px solid var(--border2); border-radius: 10px; padding: 0.6rem 1.2rem; font-size: 0.9rem; color: var(--text); opacity: 0; transition: all 0.3s; pointer-events: none; z-index: 999; white-space: nowrap; }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  /* BACK BUTTON */
+  .back-btn { display: inline-flex; align-items: center; gap: 0.4rem; color: var(--text2); font-size: 0.85rem; cursor: pointer; margin-bottom: 1.5rem; padding: 0.4rem 0; transition: color 0.15s; border: none; background: none; }
+  .back-btn:hover { color: var(--text); }
+  .back-btn svg { width: 16px; height: 16px; }
+</style>
+</head>
+<body>
+
+<!-- LAUNCH PAGE -->
+<div id="page-launch" class="page active">
+  <div style="max-width:680px;margin:0 auto;width:100%;padding:2rem;">
+    <div class="launch-nav">
+      <button class="btn-secondary" onclick="showSettings()">⚙ ตั้งค่า</button>
+    </div>
+    <div class="launch-header">
+      <h1>Quiz <span>Board</span></h1>
+      <p>เกมแผ่นป้ายคำถาม แบ่งทีมแข่งกัน</p>
+    </div>
+
+    <div class="launch-card">
+      <h3>ชุดคำถาม</h3>
+      <select id="qset-select" class="qset-select">
+        <option value="">— เลือกชุดคำถาม —</option>
+      </select>
+    </div>
+
+    <div class="launch-card">
+      <h3>จำนวนทีม</h3>
+      <div class="team-count-row">
+        <label>เลือกจำนวน:</label>
+        <div class="count-btns" id="count-btns">
+          <button class="count-btn active" onclick="setTeamCount(2)" data-n="2">2</button>
+          <button class="count-btn" onclick="setTeamCount(3)" data-n="3">3</button>
+          <button class="count-btn" onclick="setTeamCount(4)" data-n="4">4</button>
+          <button class="count-btn" onclick="setTeamCount(5)" data-n="5">5</button>
+        </div>
+      </div>
+      <div class="team-names-grid" id="team-names-grid"></div>
+    </div>
+
+    <button class="btn-primary" id="btn-start" onclick="startGame()">▶ เริ่มเกม</button>
+  </div>
+</div>
+
+<!-- SETTINGS PAGE -->
+<div id="page-settings" class="page">
+  <div class="settings-layout">
+    <div class="settings-sidebar">
+      <h2>ตั้งค่า</h2>
+      <div class="sidebar-item active" onclick="showSettingsTab('qsets')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+        ชุดคำถาม
+      </div>
+    </div>
+    <div class="settings-content">
+      <div id="tab-qsets">
+        <div class="settings-topbar">
+          <button class="back-btn" onclick="showLaunch()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+            กลับหน้าหลัก
+          </button>
+          <h2>ชุดคำถาม</h2>
+          <button class="btn-small" onclick="downloadExcelTemplate()" title="ดาวโหลด Template Excel">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Template
+          </button>
+          <button class="btn-small" onclick="importExcel()" title="นำเข้า Excel">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Import Excel
+          </button>
+          <button class="btn-small" onclick="importJSON()" title="นำเข้า JSON">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Import JSON
+          </button>
+          <button class="btn-small accent" onclick="openCreateQSet()">+ สร้างชุดใหม่</button>
+        </div>
+        <div id="qset-list" class="qset-list"></div>
+      </div>
+    </div>
+  </div>
+  <input type="file" id="file-excel" accept=".xlsx,.xls" style="display:none" onchange="handleExcelImport(event)">
+  <input type="file" id="file-json" accept=".json" style="display:none" onchange="handleJSONImport(event)">
+</div>
+
+<!-- GAME PAGE -->
+<div id="page-game" class="page">
+  <div class="game-board">
+    <div class="game-header">
+      <h2 id="game-title">Quiz Board</h2>
+      <div class="turn-badge">
+        <div class="turn-dot"></div>
+        <span id="turn-label">ทีม 1 เลือกคำถาม</span>
+      </div>
+    </div>
+    <div class="categories-header">
+      <div class="cat-head cat-30">30 คะแนน</div>
+      <div class="cat-head cat-50">50 คะแนน</div>
+      <div class="cat-head cat-70">70 คะแนน</div>
+      <div class="cat-head cat-100">100 คะแนน</div>
+    </div>
+    <div class="board-grid" id="board-grid"></div>
+  </div>
+  <div class="score-sidebar">
+    <h3>คะแนน</h3>
+    <div id="score-cards"></div>
+    <button class="btn-end-game" onclick="endGame()" style="margin-top:1rem">จบเกม</button>
+  </div>
+</div>
+
+<!-- END PAGE -->
+<div id="page-end" class="page">
+  <div class="end-card">
+    <h1>🏆 จบเกมแล้ว!</h1>
+    <div class="winner-badge" id="winner-display"></div>
+    <div class="final-scores" id="final-scores"></div>
+    <button class="btn-primary" onclick="showLaunch()" style="max-width:220px;margin:0 auto">กลับหน้าหลัก</button>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- MODALS -->
+<div id="modals"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script>
+// ========================
+// STATE
+// ========================
+let state = {
+  teams: [],
+  currentTurn: 0,
+  questions: [],  // shuffled for board: [{score, q, a, used, revealed}]
+  qsetName: '',
+};
+
+const TEAM_COLORS = ['#7c6cfc','#2dd4a0','#f5a623','#fc6c6c','#60a5fa'];
+const SCORE_CATS = [30, 50, 70, 100];
+
+// ========================
+// STORAGE
+// ========================
+function saveQSets(data) { localStorage.setItem('qsets', JSON.stringify(data)); }
+function loadQSets() { return JSON.parse(localStorage.getItem('qsets') || '[]'); }
+function genId() { return Date.now().toString(36) + Math.random().toString(36).slice(2); }
+
+// ========================
+// PAGE NAV
+// ========================
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-' + id).classList.add('active');
+}
+function showLaunch() { showPage('launch'); renderLaunchQSets(); renderTeamNames(); }
+function showSettings() { showPage('settings'); renderQSetList(); }
+function showSettingsTab(t) { showPage('settings'); }
+
+// ========================
+// LAUNCH
+// ========================
+let teamCount = 2;
+let teamNames = ['ทีม 1','ทีม 2','ทีม 3','ทีม 4','ทีม 5'];
+
+function setTeamCount(n) {
+  teamCount = n;
+  document.querySelectorAll('.count-btn').forEach(b => {
+    b.classList.toggle('active', parseInt(b.dataset.n) === n);
+  });
+  renderTeamNames();
+}
+
+function renderTeamNames() {
+  const g = document.getElementById('team-names-grid');
+  g.innerHTML = '';
+  for (let i = 0; i < teamCount; i++) {
+    const wrap = document.createElement('div');
+    wrap.className = 'team-name-wrap';
+    const dot = document.createElement('div');
+    dot.className = 'team-dot';
+    dot.style.background = TEAM_COLORS[i];
+    const inp = document.createElement('input');
+    inp.className = 'team-name-input with-dot';
+    inp.value = teamNames[i] || `ทีม ${i+1}`;
+    inp.placeholder = `ทีม ${i+1}`;
+    inp.addEventListener('input', e => { teamNames[i] = e.target.value || `ทีม ${i+1}`; });
+    wrap.appendChild(dot);
+    wrap.appendChild(inp);
+    g.appendChild(wrap);
+  }
+}
+
+function renderLaunchQSets() {
+  const sel = document.getElementById('qset-select');
+  const qsets = loadQSets();
+  sel.innerHTML = '<option value="">— เลือกชุดคำถาม —</option>';
+  qsets.forEach(qs => {
+    const opt = document.createElement('option');
+    opt.value = qs.id;
+    opt.textContent = qs.name + ` (${qs.questions.length} ข้อ)`;
+    sel.appendChild(opt);
+  });
+}
+
+function startGame() {
+  const selVal = document.getElementById('qset-select').value;
+  if (!selVal) { toast('กรุณาเลือกชุดคำถามก่อน'); return; }
+  const qsets = loadQSets();
+  const qs = qsets.find(q => q.id === selVal);
+  if (!qs || qs.questions.length === 0) { toast('ชุดคำถามว่างเปล่า'); return; }
+
+  // build teams
+  state.teams = [];
+  for (let i = 0; i < teamCount; i++) {
+    state.teams.push({ name: teamNames[i] || `ทีม ${i+1}`, score: 0, color: TEAM_COLORS[i] });
+  }
+  state.currentTurn = 0;
+  state.qsetName = qs.name;
+
+  // build board: group by score, take up to 5 per score
+  const board = [];
+  SCORE_CATS.forEach(sc => {
+    const pool = qs.questions.filter(q => q.score === sc);
+    // shuffle
+    for (let i = pool.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i+1));
+      [pool[i], pool[j]] = [pool[j], pool[i]];
+    }
+    pool.slice(0, 5).forEach(q => board.push({ ...q, used: false, revealed: false }));
+  });
+
+  // sort board by score for column display
+  board.sort((a, b) => SCORE_CATS.indexOf(a.score) - SCORE_CATS.indexOf(b.score));
+  state.questions = board;
+
+  renderBoard();
+  renderScoreCards();
+  updateTurnLabel();
+  showPage('game');
+}
+
+// ========================
+// GAME BOARD
+// ========================
+function renderBoard() {
+  const grid = document.getElementById('board-grid');
+  grid.innerHTML = '';
+
+  // We need columns by score. Transpose: 5 rows x 4 cols
+  const cols = SCORE_CATS.map(sc => state.questions.filter(q => q.score === sc));
+  const maxRows = Math.max(...cols.map(c => c.length));
+
+  for (let row = 0; row < maxRows; row++) {
+    for (let ci = 0; ci < 4; ci++) {
+      const q = cols[ci][row];
+      const cell = document.createElement('div');
+      if (q) {
+        cell.className = `board-cell score-${q.score}`;
+        if (q.used) cell.classList.add('used');
+        else if (q.revealed) cell.classList.add('revealed');
+        cell.textContent = q.score;
+        cell.dataset.idx = state.questions.indexOf(q);
+        if (!q.used && !q.revealed) {
+          cell.addEventListener('click', () => openQuestion(parseInt(cell.dataset.idx)));
+        }
+      } else {
+        cell.className = 'board-cell';
+        cell.style.visibility = 'hidden';
+      }
+      grid.appendChild(cell);
+    }
+  }
+}
+
+function renderScoreCards() {
+  const c = document.getElementById('score-cards');
+  c.innerHTML = '';
+  state.teams.forEach((t, i) => {
+    const card = document.createElement('div');
+    card.className = 'score-card' + (i === state.currentTurn ? ' current-turn' : '');
+    card.id = `score-card-${i}`;
+    card.innerHTML = `
+      <div class="score-card-top">
+        <div class="team-color" style="background:${t.color}"></div>
+        <div class="score-card-name">${escHtml(t.name)}</div>
+      </div>
+      <div class="score-val">${t.score}</div>
+    `;
+    card.addEventListener('click', () => openScoreEdit(i));
+    c.appendChild(card);
+  });
+}
+
+function updateTurnLabel() {
+  const t = state.teams[state.currentTurn];
+  document.getElementById('turn-label').textContent = `${t.name} เลือกคำถาม`;
+  // update score card highlights
+  document.querySelectorAll('.score-card').forEach((c, i) => {
+    c.classList.toggle('current-turn', i === state.currentTurn);
+  });
+}
+
+function nextTurn() {
+  state.currentTurn = (state.currentTurn + 1) % state.teams.length;
+  updateTurnLabel();
+}
+
+// ========================
+// QUESTION MODAL
+// ========================
+function openQuestion(idx) {
+  const q = state.questions[idx];
+  if (!q || q.used || q.revealed) return;
+
+  const colorMap = { 30: 'tag-30', 50: 'tag-50', 70: 'tag-70', 100: 'tag-100' };
+  const bgMap = { 30: 'rgba(37,99,235,0.2)', 50: 'rgba(124,58,237,0.2)', 70: 'rgba(219,119,6,0.2)', 100: 'rgba(220,38,38,0.2)' };
+  const txMap = { 30: '#60a5fa', 50: '#a78bfa', 70: '#fbbf24', 100: '#fca5a5' };
+
+  let multiplier = 1;
+  let selectedTeams = [state.currentTurn];
+  let revealed = false;
+
+  function getEffectiveScore() {
+    return Math.trunc(q.score * multiplier);
+  }
+
+  function render() {
+    const eff = getEffectiveScore();
+    const modal = document.createElement('div');
+    modal.className = 'modal-overlay';
+    modal.id = 'q-modal-overlay';
+    modal.innerHTML = `
+      <div class="q-modal">
+        <div class="q-modal-score-badge" style="background:${bgMap[q.score]};color:${txMap[q.score]}">
+          ${q.score} คะแนน
+        </div>
+        <div class="q-modal-question">${escHtml(q.question)}</div>
+        
+        <div class="answer-section ${revealed ? '' : 'hidden-ans'}" id="ans-section">
+          <div class="answer-label">เฉลย</div>
+          <div class="answer-text">${escHtml(q.answer)}</div>
+        </div>
+
+        ${revealed ? '' : `
+          <div class="q-modal-actions">
+            <button class="btn-reveal" onclick="revealAnswer(${idx})">👁 ดูเฉลย</button>
+            <button class="btn-close-q" onclick="closeQModal()">ปิด</button>
+          </div>
+        `}
+
+        ${revealed ? `
+          <div class="score-edit-section">
+            <div class="score-edit-title">คะแนนที่จะรับ</div>
+            <div class="score-display" id="eff-score">${eff}</div>
+            <div class="score-multipliers">
+              <button class="mult-btn ${multiplier === 0.5 ? 'active' : ''}" onclick="setMult(${idx}, 0.5)">÷2</button>
+              <button class="mult-btn ${multiplier === 1 ? 'active' : ''}" onclick="setMult(${idx}, 1)">×1</button>
+              <button class="mult-btn ${multiplier === 2 ? 'active' : ''}" onclick="setMult(${idx}, 2)">×2</button>
+            </div>
+            <div class="team-select-section">
+              <div class="team-select-title">เลือกทีมที่รับคะแนน (เลือกได้หลายทีม)</div>
+              <div class="team-select-grid" id="team-sel-grid">
+                ${state.teams.map((t, i) => `
+                  <button class="team-select-btn ${selectedTeams.includes(i) ? 'selected' : ''}" 
+                    style="${selectedTeams.includes(i) ? `background:${t.color}` : ''}"
+                    onclick="toggleTeamSel(${idx}, ${i})">${escHtml(t.name)}</button>
+                `).join('')}
+              </div>
+            </div>
+          </div>
+          <div class="q-modal-actions" style="margin-top:1rem">
+            <button class="btn-award" onclick="awardScore(${idx})">✓ รับคะแนน</button>
+            <button class="btn-close-q" onclick="closeQModal()">ปิดโดยไม่รับ</button>
+          </div>
+        ` : ''}
+      </div>
+    `;
+    const existing = document.getElementById('q-modal-overlay');
+    if (existing) existing.remove();
+    document.getElementById('modals').appendChild(modal);
+
+    // Store state in closure references via window
+    window._qState = { idx, multiplier, selectedTeams, revealed };
+  }
+
+  window._qState = { idx, multiplier, selectedTeams, revealed };
+
+  window.revealAnswer = function(qIdx) {
+    window._qState.revealed = true;
+    state.questions[qIdx].revealed = true;
+    renderBoard();
+    rebuildQModal(qIdx);
+  };
+
+  window.setMult = function(qIdx, m) {
+    window._qState.multiplier = m;
+    rebuildQModal(qIdx);
+  };
+
+  window.toggleTeamSel = function(qIdx, ti) {
+    const sel = window._qState.selectedTeams;
+    const pos = sel.indexOf(ti);
+    if (pos === -1) sel.push(ti);
+    else if (sel.length > 1) sel.splice(pos, 1);
+    rebuildQModal(qIdx);
+  };
+
+  window.awardScore = function(qIdx) {
+    const { multiplier, selectedTeams } = window._qState;
+    const q = state.questions[qIdx];
+    const eff = Math.trunc(q.score * multiplier);
+    const perTeam = Math.trunc(eff / selectedTeams.length);
+    selectedTeams.forEach(ti => { state.teams[ti].score += perTeam; });
+    state.questions[qIdx].used = true;
+    state.questions[qIdx].revealed = true;
+    closeQModal();
+    renderBoard();
+    renderScoreCards();
+    nextTurn();
+    toast(`+${perTeam} คะแนน ${selectedTeams.length > 1 ? `(${selectedTeams.length} ทีม)` : ''}`);
+  };
+
+  window.closeQModal = function() {
+    const m = document.getElementById('q-modal-overlay');
+    if (m) m.remove();
+  };
+
+  function rebuildQModal(qIdx) {
+    const { multiplier, selectedTeams, revealed } = window._qState;
+    const q = state.questions[qIdx];
+    const eff = Math.trunc(q.score * multiplier);
+    const m = document.getElementById('q-modal-overlay');
+    if (!m) return;
+    const modal = m.querySelector('.q-modal');
+    modal.innerHTML = `
+      <div class="q-modal-score-badge" style="background:${bgMap[q.score]};color:${txMap[q.score]}">
+        ${q.score} คะแนน
+      </div>
+      <div class="q-modal-question">${escHtml(q.question)}</div>
+      <div class="answer-section" id="ans-section">
+        <div class="answer-label">เฉลย</div>
+        <div class="answer-text">${escHtml(q.answer)}</div>
+      </div>
+      <div class="score-edit-section">
+        <div class="score-edit-title">คะแนนที่จะรับ</div>
+        <div class="score-display">${eff}</div>
+        <div class="score-multipliers">
+          <button class="mult-btn ${multiplier === 0.5 ? 'active' : ''}" onclick="setMult(${qIdx}, 0.5)">÷2</button>
+          <button class="mult-btn ${multiplier === 1 ? 'active' : ''}" onclick="setMult(${qIdx}, 1)">×1</button>
+          <button class="mult-btn ${multiplier === 2 ? 'active' : ''}" onclick="setMult(${qIdx}, 2)">×2</button>
+        </div>
+        <div class="team-select-section">
+          <div class="team-select-title">เลือกทีมที่รับคะแนน (เลือกได้หลายทีม)</div>
+          <div class="team-select-grid">
+            ${state.teams.map((t, i) => `
+              <button class="team-select-btn ${selectedTeams.includes(i) ? 'selected' : ''}" 
+                style="${selectedTeams.includes(i) ? `background:${t.color}` : ''}"
+                onclick="toggleTeamSel(${qIdx}, ${i})">${escHtml(t.name)}</button>
+            `).join('')}
+          </div>
+        </div>
+      </div>
+      <div class="q-modal-actions" style="margin-top:1rem">
+        <button class="btn-award" onclick="awardScore(${qIdx})">✓ รับคะแนน</button>
+        <button class="btn-close-q" onclick="closeQModal()">ปิดโดยไม่รับ</button>
+      </div>
+    `;
+  }
+
+  render();
+}
+
+// ========================
+// SCORE EDIT MODAL
+// ========================
+function openScoreEdit(teamIdx) {
+  const t = state.teams[teamIdx];
+  const overlay = document.createElement('div');
+  overlay.className = 'modal-overlay';
+  overlay.innerHTML = `
+    <div class="modal" style="max-width:380px">
+      <h3>แก้ไขคะแนน: ${escHtml(t.name)}</h3>
+      <div class="form-group">
+        <label>คะแนนปัจจุบัน</label>
+        <div class="score-adjust-row">
+          <input type="number" id="score-edit-val" value="${t.score}" class="form-input" style="width:120px">
+          <span style="color:var(--text2);font-size:0.85rem">คะแนน</span>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-secondary" onclick="this.closest('.modal-overlay').remove()">ยกเลิก</button>
+        <button class="btn-primary" style="width:auto;padding:0.6rem 1.2rem;margin:0" onclick="saveScoreEdit(${teamIdx}, this)">บันทึก</button>
+      </div>
+    </div>
+  `;
+  document.getElementById('modals').appendChild(overlay);
+}
+
+function saveScoreEdit(teamIdx, btn) {
+  const val = parseInt(document.getElementById('score-edit-val').value);
+  if (isNaN(val)) return;
+  state.teams[teamIdx].score = val;
+  btn.closest('.modal-overlay').remove();
+  renderScoreCards();
+  toast('บันทึกคะแนนแล้ว');
+}
+
+// ========================
+// END GAME
+// ========================
+function endGame() {
+  if (!confirm('จบเกมและดูผลการแข่งขัน?')) return;
+  const sorted = [...state.teams].sort((a, b) => b.score - a.score);
+  const winner = sorted[0];
+  document.getElementById('winner-display').innerHTML = `
+    <div class="w-label">🥇 ชนะเลิศ</div>
+    <div class="w-name">${escHtml(winner.name)}</div>
+    <div class="w-score">${winner.score} คะแนน</div>
+  `;
+  const medals = ['🥇','🥈','🥉','4️⃣','5️⃣'];
+  document.getElementById('final-scores').innerHTML = sorted.map((t, i) => `
+    <div class="final-score-row">
+      <div class="rank">${medals[i]}</div>
+      <div class="team-color" style="background:${t.color};width:10px;height:10px;border-radius:50%;flex-shrink:0"></div>
+      <div class="name" style="margin-left:0.5rem">${escHtml(t.name)}</div>
+      <div class="pts" style="color:${t.color}">${t.score}</div>
+    </div>
+  `).join('');
+  showPage('end');
+}
+
+// ========================
+// SETTINGS - QSETS
+// ========================
+function renderQSetList() {
+  const qsets = loadQSets();
+  const container = document.getElementById('qset-list');
+  if (qsets.length === 0) {
+    container.innerHTML = `
+      <div class="empty-state">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="2"/></svg>
+        <p>ยังไม่มีชุดคำถาม<br>กดปุ่ม "+ สร้างชุดใหม่" เพื่อเริ่ม</p>
+      </div>`;
+    return;
+  }
+  container.innerHTML = qsets.map(qs => {
+    const counts = SCORE_CATS.map(sc => ({ sc, n: qs.questions.filter(q => q.score === sc).length }));
+    return `
+    <div class="qset-item">
+      <div class="qset-item-info">
+        <h4>${escHtml(qs.name)}</h4>
+        <p>${qs.questions.length} คำถาม &nbsp;
+          ${counts.map(c => c.n > 0 ? `<span class="tag tag-${c.sc}">${c.sc}pt×${c.n}</span>` : '').join(' ')}
+        </p>
+      </div>
+      <div class="qset-item-actions">
+        <button class="btn-icon" onclick="exportQSetJSON('${qs.id}')" title="ส่งออก JSON">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+        </button>
+        <button class="btn-icon" onclick="openEditQSet('${qs.id}')" title="แก้ไข">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+        </button>
+        <button class="btn-icon danger" onclick="deleteQSet('${qs.id}')" title="ลบ">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+        </button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function deleteQSet(id) {
+  if (!confirm('ลบชุดคำถามนี้?')) return;
+  const qsets = loadQSets().filter(q => q.id !== id);
+  saveQSets(qsets);
+  renderQSetList();
+  toast('ลบแล้ว');
+}
+
+function exportQSetJSON(id) {
+  const qs = loadQSets().find(q => q.id === id);
+  if (!qs) return;
+  const blob = new Blob([JSON.stringify(qs, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+  a.download = `${qs.name}.json`; a.click();
+}
+
+// ========================
+// CREATE / EDIT QSET MODAL
+// ========================
+function openCreateQSet() { openQSetModal(null); }
+function openEditQSet(id) {
+  const qs = loadQSets().find(q => q.id === id);
+  if (qs) openQSetModal(qs);
+}
+
+function openQSetModal(existing) {
+  let questions = existing ? [...existing.questions.map(q => ({ ...q }))] : [];
+  let editingName = existing ? existing.name : '';
+
+  function renderModal() {
+    const overlay = document.createElement('div');
+    overlay.className = 'modal-overlay';
+    overlay.id = 'qset-modal-overlay';
+    overlay.innerHTML = `
+      <div class="modal" style="width:96vw;max-width:1200px;height:92vh;display:flex;flex-direction:column;overflow:hidden">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem;flex-shrink:0">
+          <h3 style="margin:0">${existing ? 'แก้ไขชุดคำถาม' : 'สร้างชุดคำถามใหม่'}</h3>
+          <div style="display:flex;gap:0.75rem;align-items:center">
+            <button class="btn-secondary" onclick="document.getElementById('qset-modal-overlay').remove()">ยกเลิก</button>
+            <button class="btn-primary" style="width:auto;padding:0.6rem 1.4rem;margin:0" onclick="saveQSet()">บันทึกชุดคำถาม</button>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:320px 1fr;gap:1.25rem;flex:1;overflow:hidden">
+          <!-- LEFT: form -->
+          <div style="display:flex;flex-direction:column;gap:1rem;overflow-y:auto;padding-right:0.5rem">
+            <div class="form-group" style="margin:0">
+              <label>ชื่อชุดคำถาม</label>
+              <input class="form-input" id="qset-name-inp" value="${escHtml(editingName)}" placeholder="เช่น ทั่วไปรอบที่ 1">
+            </div>
+            <hr class="divider" style="margin:0">
+            <div style="font-size:0.9rem;font-weight:500;color:var(--text2)">เพิ่มคำถามใหม่</div>
+            <div class="form-group" style="margin:0">
+              <label>คะแนน</label>
+              <div class="score-options" id="inline-score-opts">
+                ${SCORE_CATS.map(sc => `<div class="score-option tag-${sc} ${sc===30?'selected':''}" onclick="selectInlineScore(${sc},this)">${sc}</div>`).join('')}
+              </div>
+              <input type="hidden" id="inline-sel-score" value="30">
+            </div>
+            <div class="form-group" style="margin:0">
+              <label>คำถาม</label>
+              <textarea class="form-input" id="inline-q-input" placeholder="ใส่คำถามที่นี่..." style="min-height:90px"></textarea>
+            </div>
+            <div class="form-group" style="margin:0">
+              <label>คำตอบ / เฉลย</label>
+              <textarea class="form-input" id="inline-a-input" placeholder="ใส่คำตอบที่นี่..." style="min-height:70px"></textarea>
+            </div>
+            <button class="btn-primary" style="margin:0" onclick="confirmInlineAddQ()">+ เพิ่มคำถาม</button>
+          </div>
+          <!-- RIGHT: question list -->
+          <div style="display:flex;flex-direction:column;overflow:hidden">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.75rem;flex-shrink:0">
+              <span style="font-size:0.85rem;color:var(--text2)">${questions.length} คำถาม</span>
+              <div style="display:flex;gap:0.4rem">
+                ${SCORE_CATS.map(sc => `<span class="tag tag-${sc}">${sc}pt: ${questions.filter(q=>q.score===sc).length}</span>`).join('')}
+              </div>
+            </div>
+            <div class="q-list" id="q-list-modal" style="flex:1;overflow-y:auto;max-height:none">
+              ${questions.length === 0 ? '<div style="text-align:center;color:var(--text3);padding:2rem;font-size:0.85rem">ยังไม่มีคำถาม<br>เพิ่มคำถามจากแบบฟอร์มทางซ้าย</div>' : 
+                questions.map((q, i) => `
+                  <div class="q-list-item">
+                    <span class="tag tag-${q.score}" style="flex-shrink:0">${q.score}</span>
+                    <div class="q-list-item-main">
+                      <div class="q-text">${escHtml(q.question)}</div>
+                      <div class="a-text">เฉลย: ${escHtml(q.answer)}</div>
+                    </div>
+                    <button class="btn-icon danger" onclick="removeQuestion(${i})" title="ลบ">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                    </button>
+                  </div>
+                `).join('')
+              }
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+    const ex = document.getElementById('qset-modal-overlay');
+    if (ex) ex.remove();
+    document.getElementById('modals').appendChild(overlay);
+  }
+
+  window.openAddQuestion = function() { /* no longer used */ };
+
+  window.selectInlineScore = function(sc, el) {
+    document.querySelectorAll('#inline-score-opts .score-option').forEach(o => o.classList.remove('selected'));
+    el.classList.add('selected');
+    document.getElementById('inline-sel-score').value = sc;
+  };
+
+  window.confirmInlineAddQ = function() {
+    const score = parseInt(document.getElementById('inline-sel-score').value);
+    const question = document.getElementById('inline-q-input').value.trim();
+    const answer = document.getElementById('inline-a-input').value.trim();
+    if (!question || !answer) { toast('กรุณาใส่คำถามและคำตอบ'); return; }
+    questions.push({ score, question, answer });
+    document.getElementById('inline-q-input').value = '';
+    document.getElementById('inline-a-input').value = '';
+    renderModal();
+  };
+
+  window.removeQuestion = function(i) {
+    questions.splice(i, 1);
+    renderModal();
+  };
+
+  window.saveQSet = function() {
+    const name = document.getElementById('qset-name-inp').value.trim();
+    if (!name) { toast('กรุณาใส่ชื่อชุดคำถาม'); return; }
+    const qsets = loadQSets();
+    if (existing) {
+      const idx = qsets.findIndex(q => q.id === existing.id);
+      if (idx !== -1) qsets[idx] = { ...qsets[idx], name, questions };
+    } else {
+      qsets.push({ id: genId(), name, questions });
+    }
+    saveQSets(qsets);
+    document.getElementById('qset-modal-overlay').remove();
+    renderQSetList();
+    toast(existing ? 'อัปเดตชุดคำถามแล้ว' : 'สร้างชุดคำถามแล้ว');
+  };
+
+  renderModal();
+}
+
+// ========================
+// IMPORT / EXPORT
+// ========================
+function importExcel() { document.getElementById('file-excel').click(); }
+function importJSON() { document.getElementById('file-json').click(); }
+
+function downloadExcelTemplate() {
+  const ws_data = [
+    ['คะแนน', 'คำถาม', 'คำตอบ'],
+    [30, 'ตัวอย่างคำถาม 30 คะแนน', 'ตัวอย่างคำตอบ'],
+    [30, '', ''], [30, '', ''], [30, '', ''], [30, '', ''],
+    [50, 'ตัวอย่างคำถาม 50 คะแนน', 'ตัวอย่างคำตอบ'],
+    [50, '', ''], [50, '', ''], [50, '', ''], [50, '', ''],
+    [70, 'ตัวอย่างคำถาม 70 คะแนน', 'ตัวอย่างคำตอบ'],
+    [70, '', ''], [70, '', ''], [70, '', ''], [70, '', ''],
+    [100, 'ตัวอย่างคำถาม 100 คะแนน', 'ตัวอย่างคำตอบ'],
+    [100, '', ''], [100, '', ''], [100, '', ''], [100, '', ''],
+  ];
+  const ws = XLSX.utils.aoa_to_sheet(ws_data);
+  ws['!cols'] = [{ wch: 10 }, { wch: 50 }, { wch: 40 }];
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'คำถาม');
+  XLSX.writeFile(wb, 'quiz-template.xlsx');
+  toast('ดาวโหลด Template แล้ว');
+}
+
+function handleExcelImport(e) {
+  const file = e.target.files[0]; if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(ev) {
+    try {
+      const wb = XLSX.read(ev.target.result, { type: 'binary' });
+      const sheet = wb.Sheets[wb.SheetNames[0]];
+      const rows = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+      const questions = [];
+      rows.forEach((row, i) => {
+        if (i === 0) return; // skip header
+        const score = parseInt(row[0]);
+        const question = String(row[1] || '').trim();
+        const answer = String(row[2] || '').trim();
+        if (SCORE_CATS.includes(score) && question && answer) {
+          questions.push({ score, question, answer });
+        }
+      });
+      if (questions.length === 0) { toast('ไม่พบคำถามในไฟล์'); return; }
+      const name = file.name.replace(/\.[^.]+$/, '');
+      const qsets = loadQSets();
+      qsets.push({ id: genId(), name, questions });
+      saveQSets(qsets);
+      renderQSetList();
+      toast(`นำเข้า ${questions.length} คำถามแล้ว`);
+    } catch(err) { toast('ไม่สามารถอ่านไฟล์ Excel ได้'); }
+  };
+  reader.readAsBinaryString(file);
+  e.target.value = '';
+}
+
+function handleJSONImport(e) {
+  const file = e.target.files[0]; if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(ev) {
+    try {
+      const data = JSON.parse(ev.target.result);
+      // support both single qset object or array
+      const qsets = loadQSets();
+      const items = Array.isArray(data) ? data : [data];
+      items.forEach(item => {
+        if (item.questions && item.name) {
+          qsets.push({ id: genId(), name: item.name, questions: item.questions });
+        }
+      });
+      saveQSets(qsets);
+      renderQSetList();
+      toast(`นำเข้าสำเร็จ`);
+    } catch(err) { toast('ไม่สามารถอ่านไฟล์ JSON ได้'); }
+  };
+  reader.readAsText(file);
+  e.target.value = '';
+}
+
+// ========================
+// UTILS
+// ========================
+function escHtml(s) {
+  return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+// ========================
+// INIT
+// ========================
+renderTeamNames();
+renderLaunchQSets();
+
+// seed demo data if empty
+if (loadQSets().length === 0) {
+  const demo = {
+    id: genId(), name: 'ชุดทดสอบ',
+    questions: [
+      { score: 30, question: 'เมืองหลวงของประเทศไทยคืออะไร?', answer: 'กรุงเทพมหานคร' },
+      { score: 30, question: '1 + 1 เท่ากับเท่าไร?', answer: '2' },
+      { score: 30, question: 'สีของท้องฟ้าในตอนกลางวันคืออะไร?', answer: 'สีฟ้า' },
+      { score: 30, question: 'น้ำแข็งเกิดจากน้ำที่อุณหภูมิเท่าไร?', answer: '0 องศาเซลเซียส' },
+      { score: 30, question: 'ดวงอาทิตย์ขึ้นทางทิศใด?', answer: 'ทิศตะวันออก' },
+      { score: 50, question: 'ประเทศไทยมีกี่จังหวัด?', answer: '77 จังหวัด' },
+      { score: 50, question: 'แก๊สชนิดใดมีมากที่สุดในอากาศ?', answer: 'ไนโตรเจน' },
+      { score: 50, question: 'สัตว์บกที่ใหญ่ที่สุดในโลกคืออะไร?', answer: 'ช้างแอฟริกา' },
+      { score: 50, question: 'ภาษาที่มีผู้พูดมากที่สุดในโลกคืออะไร?', answer: 'ภาษาจีนกลาง (แมนดาริน)' },
+      { score: 50, question: 'น้ำมีสูตรเคมีว่าอย่างไร?', answer: 'H₂O' },
+      { score: 70, question: 'ดาวเคราะห์ที่ใกล้ดวงอาทิตย์มากที่สุดคือดาวอะไร?', answer: 'ดาวพุธ' },
+      { score: 70, question: 'ใครเป็นผู้ประดิษฐ์หลอดไฟฟ้า?', answer: 'โทมัส เอดิสัน' },
+      { score: 70, question: 'ทวีปที่ใหญ่ที่สุดในโลกคือทวีปอะไร?', answer: 'ทวีปเอเชีย' },
+      { score: 70, question: 'กำแพงเมืองจีนอยู่ในประเทศใด?', answer: 'ประเทศจีน' },
+      { score: 70, question: 'ปิกัสโซเป็นศิลปินชาติใด?', answer: 'สเปน' },
+      { score: 100, question: 'ทฤษฎีสัมพัทธภาพทั่วไปเป็นผลงานของใคร?', answer: 'อัลเบิร์ต ไอน์สไตน์' },
+      { score: 100, question: 'สัตว์ที่มีอายุยืนที่สุดในโลกคือสัตว์ชนิดใด?', answer: 'หอยนางรมธรรมดา (Ocean Quahog) มีอายุมากกว่า 500 ปี' },
+      { score: 100, question: 'โปรตีนในร่างกายสร้างจากหน่วยพื้นฐานใด?', answer: 'กรดอะมิโน' },
+      { score: 100, question: 'ภาษาไทยมีพยัญชนะต้นกี่รูป?', answer: '44 รูป' },
+      { score: 100, question: 'แสงใช้เวลาเดินทางจากดวงอาทิตย์มาโลกกี่นาที?', answer: 'ประมาณ 8 นาที' },
+    ]
+  };
+  saveQSets([demo]);
+  renderQSetList();
+  renderLaunchQSets();
+}
+</script>
+</body>
+</html>
