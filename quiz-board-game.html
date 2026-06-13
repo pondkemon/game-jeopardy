@@ -3,255 +3,590 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Quiz Board Game</title>
+<title>Marine Fleet Quiz — สมรภูมิทะเลคำถาม</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Mitr:wght@400;500;600;700&family=Sriracha&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #0f1117;
-    --surface: #1a1d27;
-    --surface2: #22263a;
-    --surface3: #2a2f47;
-    --border: rgba(255,255,255,0.08);
-    --border2: rgba(255,255,255,0.15);
-    --text: #f0f2ff;
-    --text2: #9aa3c8;
-    --text3: #5c6494;
-    --accent: #7c6cfc;
-    --accent2: #5a4dd6;
-    --gold: #f5a623;
-    --gold2: #d4891a;
-    --green: #2dd4a0;
-    --red: #fc6c6c;
-    --blue: #60a5fa;
+    /* === MARINE PALETTE === */
+    --deep: #0E3A5D;        /* deep navy */
+    --deep2: #0a2c47;
+    --sea: #2A7AB9;         /* mid sea blue */
+    --sky: #6EB9FF;         /* light sky blue */
+    --gold: #D4A95A;        /* command gold */
+    --gold-deep: #b3863a;
+    --parch: #F5F0DD;       /* parchment cream */
+    --parch2: #efe6c8;
+    --wood: #7a5230;
+    --wood2: #5d3d22;
 
-    --c30: #2563eb;
-    --c50: #7c3aed;
-    --c70: #db7706;
-    --c100: #dc2626;
+    /* semantic */
+    --bg: var(--deep);
+    --surface: var(--parch);
+    --surface2: var(--parch2);
+    --surface3: #e6dcbb;
+    --border: rgba(14,58,93,0.18);
+    --border2: rgba(14,58,93,0.32);
+    --text: #11314a;
+    --text2: #3c5d77;
+    --text3: #6c84996b;
+    --text3solid: #6c8499;
+    --accent: var(--gold);
+    --accent2: var(--gold-deep);
+    --gold2: var(--gold-deep);
+    --green: #1f9e6e;
+    --red: #d9534f;
+    --blue: var(--sea);
+
+    /* score category accents */
+    --c30: #3f97d6;   /* small island */
+    --c50: #2A7AB9;   /* harbor */
+    --c70: #d99a3c;   /* fortress */
+    --c100: #c2683a;  /* grand fortress */
+
+    --radius: 20px;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', 'Noto Sans Thai', sans-serif; min-height: 100vh; }
-  
-  /* PAGE SYSTEM */
+
+  html, body { background: var(--deep); }
+
+  body {
+    color: var(--text);
+    font-family: 'Mitr', 'Noto Sans Thai', 'Segoe UI', sans-serif;
+    min-height: 100vh;
+    position: relative;
+    overflow-x: hidden;
+  }
+
+  /* ============================================================
+     OCEAN BACKGROUND (fixed, behind everything)
+  ============================================================ */
+  .ocean-bg { position: fixed; inset: 0; z-index: -3; overflow: hidden;
+    background:
+      linear-gradient(180deg,
+        #bfe6ff 0%,
+        #8ecbf5 18%,
+        var(--sky) 34%,
+        var(--sea) 56%,
+        var(--deep) 82%,
+        var(--deep2) 100%);
+  }
+  /* sun glow on horizon */
+  .ocean-bg::before {
+    content: ''; position: absolute; top: 6%; left: 50%; width: 420px; height: 420px;
+    transform: translateX(-50%);
+    background: radial-gradient(circle, rgba(255,247,224,0.85) 0%, rgba(255,240,200,0.25) 40%, transparent 70%);
+    border-radius: 50%;
+  }
+  /* clouds */
+  .cloud { position: absolute; background: rgba(255,255,255,0.85); border-radius: 100px;
+    filter: blur(2px); opacity: 0.9; animation: drift linear infinite; }
+  .cloud::before, .cloud::after { content:''; position:absolute; background:inherit; border-radius:50%; }
+  .cloud.c1 { width: 140px; height: 34px; top: 8%; left: -180px; animation-duration: 75s; }
+  .cloud.c1::before { width: 60px; height: 60px; top: -26px; left: 24px; }
+  .cloud.c1::after { width: 44px; height: 44px; top: -16px; left: 80px; }
+  .cloud.c2 { width: 100px; height: 26px; top: 16%; left: -160px; animation-duration: 95s; animation-delay: -30s; opacity:0.7; }
+  .cloud.c2::before { width: 46px; height: 46px; top: -22px; left: 18px; }
+  .cloud.c2::after { width: 34px; height: 34px; top: -12px; left: 56px; }
+  .cloud.c3 { width: 120px; height: 30px; top: 4%; left: -160px; animation-duration: 110s; animation-delay: -60s; opacity:0.6; }
+  .cloud.c3::before { width: 52px; height: 52px; top: -24px; left: 22px; }
+  @keyframes drift { to { transform: translateX(120vw); } }
+
+  /* layered animated waves at the bottom of the ocean */
+  .waves { position: fixed; left: 0; right: 0; bottom: 0; height: 220px; z-index: -2; pointer-events: none; }
+  .waves svg { position: absolute; bottom: 0; width: 200%; height: 100%; }
+  .wave-1 { fill: rgba(110,185,255,0.22); animation: wave 14s linear infinite; }
+  .wave-2 { fill: rgba(42,122,185,0.30); animation: wave 9s linear infinite reverse; }
+  .wave-3 { fill: rgba(14,58,93,0.45); animation: wave 18s linear infinite; }
+  @keyframes wave { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+  /* faint compass + map texture overlay */
+  .compass-deco { position: fixed; right: 4%; bottom: 8%; width: 260px; height: 260px; z-index: -1;
+    opacity: 0.12; pointer-events: none; animation: spin 90s linear infinite; }
+  .compass-deco.left { right: auto; left: 3%; top: 10%; bottom: auto; width: 180px; height: 180px; opacity: 0.1; animation-duration: 120s; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  @media (prefers-reduced-motion: reduce) {
+    .cloud, .wave-1, .wave-2, .wave-3, .compass-deco { animation: none !important; }
+  }
+
+  /* ============================================================
+     PAGE SYSTEM
+  ============================================================ */
   .page { display: none; min-height: 100vh; }
   .page.active { display: flex; flex-direction: column; }
 
-  /* LAUNCH PAGE */
-  #page-launch { padding: 2rem; max-width: 700px; margin: 0 auto; width: 100%; }
-  .launch-header { text-align: center; margin-bottom: 2.5rem; padding-top: 1rem; }
-  .launch-header h1 { font-size: 2.4rem; font-weight: 700; letter-spacing: -0.02em; }
-  .launch-header h1 span { color: var(--accent); }
-  .launch-header p { color: var(--text2); margin-top: 0.4rem; font-size: 0.95rem; }
-  .launch-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 1.5rem; margin-bottom: 1.25rem; }
-  .launch-card h3 { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text3); margin-bottom: 1rem; }
-  .qset-select { width: 100%; background: var(--surface2); border: 1px solid var(--border2); color: var(--text); border-radius: 10px; padding: 0.7rem 1rem; font-size: 1rem; outline: none; appearance: none; cursor: pointer; }
-  .qset-select:focus { border-color: var(--accent); }
-  .team-count-row { display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem; }
-  .team-count-row label { color: var(--text2); font-size: 0.9rem; flex-shrink: 0; }
+  /* reusable parchment panel */
+  .launch-card, .qset-item, .modal, .q-modal, .end-card, .settings-sidebar, .score-card {
+    background: var(--surface);
+  }
+
+  /* ============================================================
+     LAUNCH PAGE — "Marine Headquarters"
+  ============================================================ */
+  #page-launch { padding: 2rem; width: 100%; }
+  .launch-nav { display: flex; justify-content: flex-end; margin-bottom: 1.25rem; }
+
+  .hq-banner { text-align: center; margin-bottom: 2rem; padding-top: 0.5rem; position: relative; }
+  .hq-flags { display: flex; justify-content: center; gap: 0.5rem; margin-bottom: 0.75rem; }
+  .mini-flag { width: 0; height: 0; }
+  .pennant { display:inline-block; width: 46px; height: 26px; clip-path: polygon(0 0, 100% 0, 78% 50%, 100% 100%, 0 100%);
+    box-shadow: inset 0 -3px 0 rgba(0,0,0,0.12); }
+  .pennant.f1 { background: var(--gold); }
+  .pennant.f2 { background: #e8efff; }
+  .pennant.f3 { background: var(--red); }
+  .pennant.f4 { background: #2dd4a0; }
+  .pennant.f5 { background: var(--gold); }
+
+  .launch-header { text-align: center; margin-bottom: 0.5rem; }
+  .launch-header .eyebrow { display:inline-block; letter-spacing: 0.28em; font-size: 0.72rem; font-weight: 600;
+    color: var(--parch); background: rgba(14,58,93,0.55); padding: 0.35rem 1rem; border-radius: 100px;
+    border: 1px solid rgba(212,169,90,0.5); margin-bottom: 0.9rem; }
+  .launch-header h1 { font-size: clamp(2.2rem, 5vw, 3.4rem); font-weight: 700; letter-spacing: -0.01em;
+    color: #fff; text-shadow: 0 2px 0 rgba(14,58,93,0.45), 0 6px 18px rgba(10,44,71,0.5); line-height: 1.1; }
+  .launch-header h1 span { color: var(--gold); }
+  .launch-header p { color: #eaf4ff; margin-top: 0.6rem; font-size: 1rem; text-shadow: 0 1px 6px rgba(10,44,71,0.6); }
+
+  /* wave separator under header */
+  .wave-sep { display:block; width: 200px; height: 16px; margin: 1rem auto 0;
+    background: radial-gradient(circle at 12px -4px, transparent 10px, var(--gold) 11px, var(--gold) 12px, transparent 13px);
+    background-size: 24px 16px; background-repeat: repeat-x; opacity: 0.85; }
+
+  .hq-deck { max-width: 720px; margin: 0 auto; width: 100%; }
+
+  .launch-card {
+    border: 1px solid rgba(212,169,90,0.55);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    margin-bottom: 1.25rem;
+    position: relative;
+    box-shadow: 0 18px 40px -22px rgba(10,44,71,0.8);
+  }
+  /* corner rivets to feel like a command board */
+  .launch-card::before, .launch-card::after { content:''; position:absolute; width: 9px; height: 9px; border-radius: 50%;
+    background: var(--gold-deep); top: 12px; }
+  .launch-card::before { left: 12px; }
+  .launch-card::after { right: 12px; }
+
+  .launch-card h3 { font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.14em;
+    color: var(--gold-deep); margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem; }
+  .launch-card h3::before { content:'⚓'; font-size: 1rem; color: var(--sea); }
+
+  .qset-select { width: 100%; background: #fff; border: 2px solid var(--border2); color: var(--text);
+    border-radius: 12px; padding: 0.75rem 1rem; font-size: 1rem; outline: none; appearance: none; cursor: pointer;
+    font-family: inherit; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%230E3A5D' stroke-width='3'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat; background-position: right 1rem center; }
+  .qset-select:focus { border-color: var(--sea); }
+
+  .team-count-row { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.1rem; flex-wrap: wrap; }
+  .team-count-row label { color: var(--text2); font-size: 0.92rem; flex-shrink: 0; }
   .count-btns { display: flex; gap: 0.5rem; }
-  .count-btn { width: 36px; height: 36px; border-radius: 8px; border: 1px solid var(--border2); background: var(--surface2); color: var(--text); font-size: 1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.15s; }
-  .count-btn.active, .count-btn:hover { background: var(--accent); border-color: var(--accent); color: #fff; }
-  .team-names-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; }
-  .team-name-input { background: var(--surface2); border: 1px solid var(--border); color: var(--text); border-radius: 8px; padding: 0.5rem 0.75rem; font-size: 0.9rem; outline: none; transition: border-color 0.15s; }
-  .team-name-input:focus { border-color: var(--accent); }
-  .team-name-wrap { position: relative; }
-  .team-dot { width: 8px; height: 8px; border-radius: 50%; position: absolute; left: 0.75rem; top: 50%; transform: translateY(-50%); }
-  .team-name-input.with-dot { padding-left: 1.75rem; }
-  .btn-primary { width: 100%; padding: 0.9rem; background: var(--accent); color: #fff; border: none; border-radius: 12px; font-size: 1.1rem; font-weight: 600; cursor: pointer; transition: all 0.2s; margin-top: 0.5rem; }
-  .btn-primary:hover { background: var(--accent2); transform: translateY(-1px); }
-  .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
-  .btn-secondary { padding: 0.6rem 1.2rem; background: transparent; color: var(--text2); border: 1px solid var(--border2); border-radius: 8px; font-size: 0.9rem; cursor: pointer; transition: all 0.15s; }
-  .btn-secondary:hover { background: var(--surface2); color: var(--text); }
-  .launch-nav { display: flex; justify-content: flex-end; margin-bottom: 1.5rem; }
+  .count-btn { width: 40px; height: 40px; border-radius: 12px; border: 2px solid var(--border2);
+    background: #fff; color: var(--text); font-size: 1.05rem; font-weight: 600; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; transition: all 0.15s; font-family: inherit; }
+  .count-btn.active, .count-btn:hover { background: var(--sea); border-color: var(--sea); color: #fff; }
 
-  /* SETTINGS PAGE */
+  /* team names rendered as ship cards */
+  .team-names-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+  .team-name-wrap { position: relative; background: #fff; border: 2px solid var(--border);
+    border-radius: 14px; padding: 0.65rem 0.75rem 0.65rem 0.65rem; display: flex; align-items: center; gap: 0.6rem;
+    transition: border-color 0.15s, transform 0.15s; }
+  .team-name-wrap:focus-within { border-color: var(--sea); transform: translateY(-1px); }
+  /* ship flag swatch (was .team-dot) */
+  .team-dot { position: static; transform: none; width: 30px !important; height: 30px !important;
+    border-radius: 8px !important; flex-shrink: 0; box-shadow: inset 0 -4px 0 rgba(0,0,0,0.18); position: relative !important; }
+  .team-dot::after { content:'⛵'; position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+    font-size: 0.9rem; }
+  .team-name-input { flex: 1; background: transparent; border: none; color: var(--text);
+    font-size: 0.95rem; font-weight: 500; outline: none; font-family: inherit; }
+  .team-name-input.with-dot { padding-left: 0; }
+  .team-name-input::placeholder { color: var(--text3solid); }
+
+  /* GOLDEN COMMAND BUTTON */
+  .btn-primary { width: 100%; padding: 1rem; background: linear-gradient(180deg, #e6bd6e, var(--gold) 55%, var(--gold-deep));
+    color: var(--deep); border: none; border-radius: 16px; font-size: 1.25rem; font-weight: 700; cursor: pointer;
+    transition: all 0.18s; margin-top: 0.5rem; font-family: inherit; letter-spacing: 0.02em;
+    box-shadow: 0 10px 0 -2px var(--gold-deep), 0 18px 30px -12px rgba(212,169,90,0.7); }
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 12px 0 -2px var(--gold-deep), 0 22px 36px -12px rgba(212,169,90,0.85); }
+  .btn-primary:active { transform: translateY(2px); box-shadow: 0 6px 0 -2px var(--gold-deep); }
+  .btn-primary:disabled { opacity: 0.45; cursor: not-allowed; transform: none; box-shadow: none; }
+
+  .btn-secondary { padding: 0.6rem 1.2rem; background: rgba(255,255,255,0.92); color: var(--deep);
+    border: 2px solid rgba(212,169,90,0.7); border-radius: 12px; font-size: 0.9rem; font-weight: 600;
+    cursor: pointer; transition: all 0.15s; font-family: inherit; }
+  .btn-secondary:hover { background: #fff; border-color: var(--gold-deep); }
+
+  /* ============================================================
+     SETTINGS PAGE — "Navigation / Strategy Room"
+  ============================================================ */
   #page-settings { padding: 0; }
-  .settings-layout { display: flex; height: 100vh; }
-  .settings-sidebar { width: 220px; background: var(--surface); border-right: 1px solid var(--border); padding: 1.5rem 1rem; flex-shrink: 0; }
-  .settings-sidebar h2 { font-size: 1rem; font-weight: 600; padding: 0.5rem 0.75rem; color: var(--text2); }
-  .sidebar-item { display: flex; align-items: center; gap: 0.5rem; padding: 0.6rem 0.75rem; border-radius: 8px; cursor: pointer; color: var(--text2); font-size: 0.9rem; transition: all 0.15s; }
-  .sidebar-item:hover, .sidebar-item.active { background: var(--surface2); color: var(--text); }
-  .sidebar-item svg { width: 18px; height: 18px; opacity: 0.7; }
-  .settings-content { flex: 1; padding: 2rem; overflow-y: auto; }
-  .settings-content h2 { font-size: 1.3rem; font-weight: 600; margin-bottom: 1.5rem; }
-  .qset-list { display: grid; gap: 0.75rem; }
-  .qset-item { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1rem 1.25rem; display: flex; align-items: center; justify-content: space-between; }
-  .qset-item-info h4 { font-size: 0.95rem; font-weight: 500; }
-  .qset-item-info p { font-size: 0.8rem; color: var(--text3); margin-top: 2px; }
-  .qset-item-actions { display: flex; gap: 0.5rem; }
-  .btn-icon { width: 32px; height: 32px; border-radius: 8px; border: 1px solid var(--border2); background: transparent; color: var(--text2); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.15s; }
-  .btn-icon:hover { background: var(--surface2); color: var(--text); }
-  .btn-icon.danger:hover { background: rgba(252,108,108,0.15); color: var(--red); border-color: var(--red); }
-  .settings-topbar { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1.5rem; }
-  .settings-topbar h2 { margin: 0; flex: 1; }
-  .btn-small { padding: 0.45rem 0.9rem; border-radius: 8px; border: 1px solid var(--border2); background: var(--surface2); color: var(--text); font-size: 0.85rem; cursor: pointer; display: flex; align-items: center; gap: 0.4rem; transition: all 0.15s; }
-  .btn-small:hover { background: var(--surface3); }
-  .btn-small.accent { background: var(--accent); border-color: var(--accent); color: #fff; }
-  .btn-small.accent:hover { background: var(--accent2); }
-  .tag { display: inline-flex; align-items: center; gap: 3px; padding: 2px 8px; border-radius: 20px; font-size: 0.75rem; font-weight: 500; }
-  .tag-30 { background: rgba(37,99,235,0.2); color: #60a5fa; }
-  .tag-50 { background: rgba(124,58,237,0.2); color: #a78bfa; }
-  .tag-70 { background: rgba(219,119,6,0.2); color: #fbbf24; }
-  .tag-100 { background: rgba(220,38,38,0.2); color: #fca5a5; }
-  .empty-state { text-align: center; padding: 3rem; color: var(--text3); }
-  .empty-state svg { width: 48px; height: 48px; margin: 0 auto 1rem; opacity: 0.3; }
+  .settings-layout { display: flex; min-height: 100vh; }
+  .settings-sidebar { width: 240px; background: var(--deep); border-right: 3px solid var(--gold);
+    padding: 1.5rem 1rem; flex-shrink: 0; }
+  .settings-sidebar h2 { font-size: 1.05rem; font-weight: 700; padding: 0.5rem 0.75rem; color: var(--gold);
+    display: flex; align-items: center; gap: 0.5rem; }
+  .settings-sidebar h2::before { content:'🧭'; }
+  .sidebar-item { display: flex; align-items: center; gap: 0.6rem; padding: 0.7rem 0.85rem; border-radius: 12px;
+    cursor: pointer; color: #cfe2f2; font-size: 0.95rem; transition: all 0.15s; margin-top: 0.5rem; }
+  .sidebar-item:hover, .sidebar-item.active { background: rgba(212,169,90,0.18); color: #fff; }
+  .sidebar-item svg { width: 18px; height: 18px; opacity: 0.9; }
 
-  /* MODAL */
-  .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); display: flex; align-items: center; justify-content: center; z-index: 100; backdrop-filter: blur(4px); }
-  .modal { background: var(--surface); border: 1px solid var(--border2); border-radius: 16px; padding: 1.75rem; width: 560px; max-width: 95vw; max-height: 92vh; overflow-y: auto; }
-  .modal h3 { font-size: 1.1rem; font-weight: 600; margin-bottom: 1.25rem; }
-  .modal-footer { display: flex; gap: 0.75rem; justify-content: flex-end; margin-top: 1.25rem; padding-top: 1rem; border-top: 1px solid var(--border); }
+  .settings-content { flex: 1; padding: 2.25rem; overflow-y: auto;
+    background-image:
+      radial-gradient(circle at 1px 1px, rgba(14,58,93,0.07) 1px, transparent 0);
+    background-size: 22px 22px; }
+  .settings-content h2 { font-size: 1.4rem; font-weight: 700; margin-bottom: 1.5rem; color: var(--deep); }
+  .settings-topbar { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
+  .settings-topbar h2 { margin: 0; flex: 1; }
+
+  .qset-list { display: grid; gap: 1rem; }
+  /* paper-map style cards */
+  .qset-item { border: 2px solid var(--gold); border-radius: 16px; padding: 1.1rem 1.35rem;
+    display: flex; align-items: center; justify-content: space-between; position: relative; overflow: hidden;
+    box-shadow: 0 14px 30px -20px rgba(10,44,71,0.7);
+    background:
+      repeating-linear-gradient(45deg, rgba(212,169,90,0.05) 0 12px, transparent 12px 24px),
+      var(--surface); }
+  .qset-item::before { content:'🗺️'; position:absolute; right: -8px; bottom: -10px; font-size: 4rem; opacity: 0.08; transform: rotate(-12deg); }
+  .qset-item-info h4 { font-size: 1.05rem; font-weight: 600; color: var(--deep); }
+  .qset-item-info p { font-size: 0.82rem; color: var(--text2); margin-top: 4px; display:flex; flex-wrap:wrap; gap:4px; align-items:center; }
+  .qset-item-actions { display: flex; gap: 0.5rem; z-index: 1; }
+
+  .btn-icon { width: 36px; height: 36px; border-radius: 10px; border: 2px solid var(--border2);
+    background: #fff; color: var(--text2); cursor: pointer; display: flex; align-items: center; justify-content: center;
+    transition: all 0.15s; }
+  .btn-icon:hover { background: var(--sea); color: #fff; border-color: var(--sea); }
+  .btn-icon.danger:hover { background: var(--red); color: #fff; border-color: var(--red); }
+
+  /* toolbox-style import buttons */
+  .btn-small { padding: 0.55rem 1rem; border-radius: 12px; border: 2px solid var(--border2);
+    background: #fff; color: var(--deep); font-size: 0.85rem; font-weight: 600; cursor: pointer;
+    display: flex; align-items: center; gap: 0.45rem; transition: all 0.15s; font-family: inherit; }
+  .btn-small:hover { background: var(--surface2); border-color: var(--gold-deep); }
+  .btn-small.accent { background: linear-gradient(180deg, var(--gold), var(--gold-deep)); border-color: var(--gold-deep); color: var(--deep); }
+  .btn-small.accent:hover { filter: brightness(1.06); }
+
+  .tag { display: inline-flex; align-items: center; gap: 3px; padding: 2px 9px; border-radius: 20px;
+    font-size: 0.74rem; font-weight: 600; }
+  .tag-30 { background: rgba(63,151,214,0.18); color: var(--c30); }
+  .tag-50 { background: rgba(42,122,185,0.18); color: var(--c50); }
+  .tag-70 { background: rgba(217,154,60,0.2); color: var(--gold-deep); }
+  .tag-100 { background: rgba(194,104,58,0.18); color: var(--c100); }
+
+  .empty-state { text-align: center; padding: 3rem; color: var(--text2); border: 2px dashed var(--border2);
+    border-radius: 16px; background: rgba(255,255,255,0.5); }
+  .empty-state svg { width: 52px; height: 52px; margin: 0 auto 1rem; opacity: 0.4; }
+
+  /* ============================================================
+     GENERIC MODAL
+  ============================================================ */
+  .modal-overlay { position: fixed; inset: 0; background: rgba(10,44,71,0.62);
+    display: flex; align-items: center; justify-content: center; z-index: 100; backdrop-filter: blur(4px); padding: 1rem; }
+  .modal { border: 2px solid var(--gold); border-radius: var(--radius); padding: 1.85rem; width: 560px;
+    max-width: 95vw; max-height: 92vh; overflow-y: auto; box-shadow: 0 30px 70px -25px rgba(10,44,71,0.9); }
+  .modal h3 { font-size: 1.2rem; font-weight: 700; margin-bottom: 1.25rem; color: var(--deep); }
+  .modal-footer { display: flex; gap: 0.75rem; justify-content: flex-end; margin-top: 1.25rem;
+    padding-top: 1rem; border-top: 1px solid var(--border); }
   .form-group { margin-bottom: 1rem; }
-  .form-group label { display: block; font-size: 0.85rem; color: var(--text2); margin-bottom: 0.4rem; }
-  .form-input { width: 100%; background: var(--surface2); border: 1px solid var(--border2); color: var(--text); border-radius: 8px; padding: 0.6rem 0.75rem; font-size: 0.9rem; outline: none; transition: border-color 0.15s; }
-  .form-input:focus { border-color: var(--accent); }
-  textarea.form-input { resize: vertical; min-height: 80px; font-family: inherit; }
+  .form-group label { display: block; font-size: 0.86rem; font-weight: 500; color: var(--text2); margin-bottom: 0.4rem; }
+  .form-input { width: 100%; background: #fff; border: 2px solid var(--border2); color: var(--text);
+    border-radius: 12px; padding: 0.65rem 0.85rem; font-size: 0.95rem; outline: none; transition: border-color 0.15s; font-family: inherit; }
+  .form-input:focus { border-color: var(--sea); }
+  textarea.form-input { resize: vertical; min-height: 80px; }
   .score-options { display: flex; gap: 0.5rem; }
-  .score-option { flex: 1; padding: 0.5rem; border-radius: 8px; border: 1px solid var(--border2); background: var(--surface2); color: var(--text2); cursor: pointer; text-align: center; font-size: 0.9rem; transition: all 0.15s; }
-  .score-option.selected { border-color: var(--accent); background: rgba(124,108,252,0.2); color: var(--text); }
+  .score-option { flex: 1; padding: 0.6rem; border-radius: 12px; border: 2px solid var(--border2);
+    background: #fff; color: var(--text2); cursor: pointer; text-align: center; font-size: 0.95rem; font-weight: 600; transition: all 0.15s; }
+  .score-option.selected { border-color: var(--gold); background: rgba(212,169,90,0.18); color: var(--deep); }
   .q-list { display: grid; gap: 0.5rem; max-height: 300px; overflow-y: auto; }
-  .q-list-item { background: var(--surface2); border-radius: 8px; padding: 0.6rem 0.75rem; display: flex; align-items: flex-start; gap: 0.75rem; }
-  .q-list-item-main { flex: 1; font-size: 0.85rem; }
-  .q-list-item-main .q-text { color: var(--text); margin-bottom: 2px; }
-  .q-list-item-main .a-text { color: var(--text3); font-size: 0.8rem; }
+  .q-list-item { background: #fff; border: 1px solid var(--border); border-radius: 12px; padding: 0.7rem 0.85rem;
+    display: flex; align-items: flex-start; gap: 0.75rem; }
+  .q-list-item-main { flex: 1; font-size: 0.88rem; }
+  .q-list-item-main .q-text { color: var(--text); margin-bottom: 2px; font-weight: 500; }
+  .q-list-item-main .a-text { color: var(--text2); font-size: 0.82rem; }
   .divider { border: none; border-top: 1px solid var(--border); margin: 1.25rem 0; }
 
-  /* GAME PAGE */
+  /* ============================================================
+     GAME PAGE — "Treasure Sea Map"
+  ============================================================ */
   #page-game { flex-direction: row; height: 100vh; overflow: hidden; }
-  .game-board { flex: 1; display: flex; flex-direction: column; padding: 1.25rem; overflow: hidden; }
-  .game-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; }
-  .game-header h2 { font-size: 1rem; font-weight: 500; color: var(--text2); }
-  .turn-badge { background: var(--surface2); border: 1px solid var(--border2); border-radius: 20px; padding: 0.3rem 0.9rem; font-size: 0.85rem; display: flex; align-items: center; gap: 0.5rem; }
-  .turn-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); box-shadow: 0 0 6px var(--green); }
-  .categories-header { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.5rem; margin-bottom: 0.5rem; }
-  .cat-head { text-align: center; font-size: 0.8rem; font-weight: 600; padding: 0.5rem; border-radius: 8px; }
-  .cat-30 { background: rgba(37,99,235,0.15); color: #60a5fa; }
-  .cat-50 { background: rgba(124,58,237,0.15); color: #a78bfa; }
-  .cat-70 { background: rgba(219,119,6,0.15); color: #fbbf24; }
-  .cat-100 { background: rgba(220,38,38,0.15); color: #fca5a5; }
-  .board-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.5rem; flex: 1; }
-  .board-cell { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 1.4rem; font-weight: 700; transition: all 0.2s; position: relative; min-height: 70px; }
-  .board-cell:hover:not(.used):not(.revealed) { transform: scale(1.03); border-color: var(--border2); background: var(--surface2); }
-  .board-cell.score-30 { color: #60a5fa; }
-  .board-cell.score-50 { color: #a78bfa; }
-  .board-cell.score-70 { color: #fbbf24; }
-  .board-cell.score-100 { color: #fca5a5; }
-  .board-cell.used { opacity: 0.25; cursor: not-allowed; pointer-events: none; }
-  .board-cell.revealed { opacity: 0.3; cursor: not-allowed; pointer-events: none; border-style: dashed; }
-  .board-cell.used::after { content: '✓'; position: absolute; font-size: 1.2rem; color: var(--green); }
+  .game-board { flex: 1; display: flex; flex-direction: column; padding: 1.5rem; overflow: hidden; }
 
-  /* SCOREBOARD SIDEBAR */
-  .score-sidebar { width: 220px; background: var(--surface); border-left: 1px solid var(--border); padding: 1.25rem; display: flex; flex-direction: column; gap: 0.6rem; overflow-y: auto; flex-shrink: 0; }
-  .score-sidebar h3 { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text3); margin-bottom: 0.25rem; }
-  .score-card { background: var(--surface2); border: 1px solid var(--border); border-radius: 12px; padding: 0.75rem 1rem; cursor: pointer; transition: all 0.15s; }
-  .score-card:hover { border-color: var(--border2); }
-  .score-card.current-turn { border-color: var(--accent); background: rgba(124,108,252,0.1); }
-  .score-card-top { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem; }
-  .team-color { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
-  .score-card-name { font-size: 0.85rem; font-weight: 500; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .score-val { font-size: 1.6rem; font-weight: 700; color: var(--text); }
-  .score-rank { font-size: 0.7rem; color: var(--text3); }
-  .btn-end-game { margin-top: auto; padding: 0.6rem; background: rgba(252,108,108,0.1); border: 1px solid rgba(252,108,108,0.3); color: var(--red); border-radius: 8px; font-size: 0.85rem; cursor: pointer; transition: all 0.15s; }
-  .btn-end-game:hover { background: rgba(252,108,108,0.2); }
+  .game-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.1rem; gap: 1rem; flex-wrap: wrap; }
+  .game-header h2 { font-size: 1.15rem; font-weight: 700; color: #fff; text-shadow: 0 2px 8px rgba(10,44,71,0.7);
+    display: flex; align-items: center; gap: 0.5rem; }
+  .game-header h2::before { content:'🗺️'; }
+  /* "Fleet X is choosing destination" badge */
+  .turn-badge { background: linear-gradient(180deg, var(--gold), var(--gold-deep)); color: var(--deep);
+    border: 2px solid #fff3; border-radius: 100px; padding: 0.5rem 1.1rem; font-size: 0.95rem; font-weight: 700;
+    display: flex; align-items: center; gap: 0.55rem; box-shadow: 0 8px 20px -8px rgba(212,169,90,0.8); }
+  .turn-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--deep);
+    box-shadow: 0 0 0 4px rgba(14,58,93,0.25); animation: pulse 1.6s ease-in-out infinite; }
+  @keyframes pulse { 0%,100% { transform: scale(1); opacity: 1; } 50% { transform: scale(0.6); opacity: 0.6; } }
 
-  /* QUESTION MODAL */
-  .q-modal { background: var(--surface); border: 1px solid var(--border2); border-radius: 20px; padding: 2rem; width: 640px; max-width: 95vw; max-height: 90vh; overflow-y: auto; }
-  .q-modal-score-badge { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.4rem 1rem; border-radius: 20px; font-size: 0.9rem; font-weight: 600; margin-bottom: 1.25rem; }
-  .q-modal-question { font-size: 1.2rem; font-weight: 500; line-height: 1.6; margin-bottom: 1.5rem; }
-  .answer-section { background: var(--surface2); border-radius: 12px; padding: 1rem 1.25rem; }
-  .answer-section.hidden-ans { filter: blur(6px); user-select: none; pointer-events: none; }
-  .answer-label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text3); margin-bottom: 0.4rem; }
-  .answer-text { font-size: 1rem; color: var(--green); font-weight: 500; }
-  .q-modal-actions { display: flex; gap: 0.75rem; margin-top: 1.25rem; flex-wrap: wrap; }
-  .score-edit-section { background: var(--surface2); border-radius: 12px; padding: 1rem 1.25rem; margin-top: 1rem; }
-  .score-edit-title { font-size: 0.8rem; color: var(--text2); margin-bottom: 0.75rem; }
-  .score-display { font-size: 2rem; font-weight: 700; text-align: center; margin: 0.5rem 0; color: var(--gold); }
-  .score-multipliers { display: flex; gap: 0.5rem; justify-content: center; margin-bottom: 0.75rem; }
-  .mult-btn { padding: 0.4rem 0.9rem; border-radius: 8px; border: 1px solid var(--border2); background: var(--surface3); color: var(--text2); cursor: pointer; font-size: 0.85rem; transition: all 0.15s; }
-  .mult-btn:hover { background: var(--surface); color: var(--text); }
-  .mult-btn.active { border-color: var(--gold); color: var(--gold); background: rgba(245,166,35,0.1); }
-  .team-select-section { margin-top: 0.75rem; }
-  .team-select-title { font-size: 0.8rem; color: var(--text2); margin-bottom: 0.5rem; }
-  .team-select-grid { display: flex; flex-wrap: wrap; gap: 0.4rem; }
-  .team-select-btn { padding: 0.4rem 0.8rem; border-radius: 20px; border: 1px solid var(--border2); background: var(--surface3); color: var(--text2); cursor: pointer; font-size: 0.8rem; transition: all 0.15s; }
-  .team-select-btn.selected { color: #fff; border-color: transparent; }
-  .btn-award { padding: 0.6rem 1.2rem; border-radius: 10px; background: var(--green); color: #000; border: none; font-size: 0.9rem; font-weight: 600; cursor: pointer; transition: all 0.15s; }
-  .btn-award:hover { opacity: 0.85; }
-  .btn-reveal { padding: 0.6rem 1.2rem; border-radius: 10px; background: var(--gold); color: #000; border: none; font-size: 0.9rem; font-weight: 600; cursor: pointer; transition: all 0.15s; }
-  .btn-reveal:hover { opacity: 0.85; }
-  .btn-close-q { padding: 0.6rem 1.2rem; border-radius: 10px; background: transparent; color: var(--text2); border: 1px solid var(--border2); font-size: 0.9rem; cursor: pointer; transition: all 0.15s; }
-  .btn-close-q:hover { background: var(--surface2); }
+  .categories-header { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.75rem; margin-bottom: 0.75rem; }
+  .cat-head { text-align: center; font-size: 0.85rem; font-weight: 700; padding: 0.6rem; border-radius: 12px;
+    color: #fff; border: 1px solid rgba(255,255,255,0.25); display:flex; align-items:center; justify-content:center; gap:0.35rem; }
+  .cat-30 { background: rgba(63,151,214,0.55); }
+  .cat-50 { background: rgba(42,122,185,0.6); }
+  .cat-70 { background: rgba(217,154,60,0.65); }
+  .cat-100 { background: rgba(194,104,58,0.6); }
+  .cat-30::before { content:'🏝️'; } .cat-50::before { content:'⚓'; }
+  .cat-70::before { content:'🏯'; } .cat-100::before { content:'🏰'; }
 
-  /* TEAM COLORS */
-  .tc-0 { background: #7c6cfc; }
-  .tc-1 { background: #2dd4a0; }
-  .tc-2 { background: #f5a623; }
-  .tc-3 { background: #fc6c6c; }
-  .tc-4 { background: #60a5fa; }
+  /* the sea map board */
+  .board-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.85rem; flex: 1;
+    padding: 1rem; border-radius: 20px; position: relative;
+    background:
+      radial-gradient(circle at 18% 30%, rgba(110,185,255,0.18), transparent 30%),
+      radial-gradient(circle at 80% 70%, rgba(110,185,255,0.16), transparent 28%),
+      rgba(8,38,62,0.5);
+    border: 2px solid rgba(212,169,90,0.45);
+    box-shadow: inset 0 0 60px rgba(8,38,62,0.6);
+    overflow: hidden;
+  }
+  /* island tiles */
+  .board-cell { border-radius: 18px; display: flex; flex-direction: column; align-items: center; justify-content: center;
+    cursor: pointer; font-size: 1.5rem; font-weight: 700; transition: transform 0.18s, box-shadow 0.18s, filter 0.18s;
+    position: relative; min-height: 78px; color: #fff; overflow: hidden;
+    background: linear-gradient(180deg, rgba(255,255,255,0.12), rgba(255,255,255,0)); border: 2px solid rgba(255,255,255,0.22);
+    animation: float 5s ease-in-out infinite; }
+  .board-cell::after { content:'⚓'; position:absolute; bottom: 6px; font-size: 0.7rem; opacity: 0.55; }
+  @keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
 
-  /* END GAME */
+  /* each score = a different island type via background icon */
+  .board-cell.score-30 { background: radial-gradient(circle at 50% 120%, #7fc1ea, var(--c30)); }
+  .board-cell.score-50 { background: radial-gradient(circle at 50% 120%, #4c97cf, var(--c50)); }
+  .board-cell.score-70 { background: radial-gradient(circle at 50% 120%, #e7bb6e, var(--c70)); color: var(--deep); }
+  .board-cell.score-100 { background: radial-gradient(circle at 50% 120%, #db9264, var(--c100)); }
+  .board-cell.score-30::before { content:'🏝️'; }
+  .board-cell.score-50::before { content:'⚓'; }
+  .board-cell.score-70::before { content:'🏯'; }
+  .board-cell.score-100::before { content:'🏰'; }
+  .board-cell::before { font-size: 1.35rem; line-height: 1; margin-bottom: 2px; filter: drop-shadow(0 2px 2px rgba(0,0,0,0.25)); }
+
+  .board-cell:hover:not(.used):not(.revealed) { transform: scale(1.05) translateY(-3px);
+    box-shadow: 0 16px 30px -12px rgba(8,38,62,0.8); filter: brightness(1.08); animation-play-state: paused; }
+
+  /* captured island */
+  .board-cell.used { cursor: not-allowed; pointer-events: none; animation: none;
+    background: rgba(14,58,93,0.55) !important; color: rgba(255,255,255,0.4); border-style: dashed; border-color: rgba(212,169,90,0.5); }
+  .board-cell.used::before { opacity: 0.25; }
+  .board-cell.used::after { content:'🏴'; font-size: 1.1rem; opacity: 1; bottom: auto; top: 6px; }
+  .board-cell.revealed { opacity: 0.45; cursor: not-allowed; pointer-events: none; border-style: dashed; animation: none; }
+
+  /* ============================================================
+     SCORE SIDEBAR — "Fleet Ranking Board"
+  ============================================================ */
+  .score-sidebar { width: 250px; background: var(--deep); border-left: 3px solid var(--gold);
+    padding: 1.35rem 1.1rem; display: flex; flex-direction: column; gap: 0.7rem; overflow-y: auto; flex-shrink: 0; }
+  .score-sidebar h3 { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.12em; color: var(--gold);
+    margin-bottom: 0.4rem; display: flex; align-items: center; gap: 0.4rem; }
+  .score-sidebar h3::before { content:'🚩'; }
+
+  .score-card { background: rgba(255,255,255,0.06); border: 2px solid rgba(255,255,255,0.12); border-radius: 16px;
+    padding: 0.85rem 1rem; cursor: pointer; transition: all 0.18s; position: relative; }
+  .score-card:hover { border-color: rgba(212,169,90,0.6); background: rgba(255,255,255,0.1); }
+  .score-card.current-turn { border-color: var(--gold); background: rgba(212,169,90,0.2);
+    box-shadow: 0 0 0 3px rgba(212,169,90,0.25), 0 12px 26px -12px rgba(212,169,90,0.6); }
+  .score-card.current-turn::after { content:'⚓ บัญชาการ'; position: absolute; top: -10px; right: 10px;
+    background: var(--gold); color: var(--deep); font-size: 0.62rem; font-weight: 700; padding: 2px 8px; border-radius: 100px; }
+  .score-card-top { display: flex; align-items: center; gap: 0.55rem; margin-bottom: 0.5rem; }
+  /* captain badge / ship flag (was .team-color dot) */
+  .team-color { width: 26px !important; height: 26px !important; border-radius: 8px !important; flex-shrink: 0;
+    box-shadow: inset 0 -3px 0 rgba(0,0,0,0.22); position: relative; }
+  .team-color::after { content:'⛵'; position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-size:0.78rem; }
+  .score-card-name { font-size: 0.92rem; font-weight: 600; flex: 1; color: #eaf4ff;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .score-val { font-size: 2rem; font-weight: 700; color: var(--gold); line-height: 1; }
+  .score-rank { font-size: 0.7rem; color: #9fb8cc; }
+
+  .btn-end-game { margin-top: auto; padding: 0.75rem; background: rgba(217,83,79,0.15);
+    border: 2px solid rgba(217,83,79,0.5); color: #ffb3b0; border-radius: 12px; font-size: 0.9rem; font-weight: 600;
+    cursor: pointer; transition: all 0.15s; font-family: inherit; }
+  .btn-end-game:hover { background: rgba(217,83,79,0.3); color: #fff; }
+
+  /* ============================================================
+     QUESTION MODAL — "Mission Briefing"
+  ============================================================ */
+  .q-modal { border: 2px solid var(--gold); border-radius: 24px; padding: 2.25rem; width: 660px;
+    max-width: 95vw; max-height: 90vh; overflow-y: auto; box-shadow: 0 36px 80px -28px rgba(10,44,71,0.9);
+    background:
+      repeating-linear-gradient(0deg, rgba(212,169,90,0.04) 0 28px, transparent 28px 56px),
+      var(--surface); }
+  .q-modal-score-badge { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.45rem 1.1rem;
+    border-radius: 100px; font-size: 0.95rem; font-weight: 700; margin-bottom: 1.35rem; border: 1px solid rgba(0,0,0,0.06); }
+  .q-modal-question { font-size: 1.45rem; font-weight: 600; line-height: 1.55; margin-bottom: 1.6rem;
+    color: var(--deep); text-align: center; }
+  .answer-section { background: #fff; border: 2px solid var(--gold); border-radius: 14px; padding: 1.1rem 1.35rem;
+    transition: filter 0.3s; }
+  .answer-section.hidden-ans { filter: blur(8px); user-select: none; pointer-events: none; }
+  .answer-label { font-size: 0.74rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--gold-deep);
+    margin-bottom: 0.4rem; font-weight: 700; }
+  .answer-label::before { content:'🗝️ '; }
+  .answer-text { font-size: 1.1rem; color: var(--green); font-weight: 600; }
+  .q-modal-actions { display: flex; gap: 0.75rem; margin-top: 1.35rem; flex-wrap: wrap; }
+
+  .score-edit-section { background: #fff; border: 2px dashed var(--gold); border-radius: 14px;
+    padding: 1.1rem 1.35rem; margin-top: 1.1rem; }
+  .score-edit-title { font-size: 0.85rem; color: var(--text2); margin-bottom: 0.75rem; font-weight: 500; }
+  .score-edit-title::before { content:'🏆 '; }
+  .score-display { font-size: 2.4rem; font-weight: 700; text-align: center; margin: 0.5rem 0; color: var(--gold-deep);
+    text-shadow: 0 2px 0 rgba(212,169,90,0.25); }
+  .score-multipliers { display: flex; gap: 0.5rem; justify-content: center; margin-bottom: 0.85rem; }
+  .mult-btn { padding: 0.45rem 1rem; border-radius: 12px; border: 2px solid var(--border2); background: #fff;
+    color: var(--text2); cursor: pointer; font-size: 0.9rem; font-weight: 600; transition: all 0.15s; font-family: inherit; }
+  .mult-btn:hover { background: var(--surface2); color: var(--deep); }
+  .mult-btn.active { border-color: var(--gold); color: var(--gold-deep); background: rgba(212,169,90,0.18); }
+  .team-select-section { margin-top: 0.85rem; }
+  .team-select-title { font-size: 0.85rem; color: var(--text2); margin-bottom: 0.55rem; font-weight: 500; }
+  .team-select-grid { display: flex; flex-wrap: wrap; gap: 0.45rem; }
+  .team-select-btn { padding: 0.45rem 0.9rem; border-radius: 100px; border: 2px solid var(--border2); background: #fff;
+    color: var(--text2); cursor: pointer; font-size: 0.85rem; font-weight: 600; transition: all 0.15s; font-family: inherit; }
+  .team-select-btn.selected { color: #fff; border-color: transparent; box-shadow: 0 6px 14px -6px rgba(0,0,0,0.4); }
+
+  .btn-award { padding: 0.7rem 1.4rem; border-radius: 12px; background: linear-gradient(180deg, #2bbd84, var(--green));
+    color: #fff; border: none; font-size: 0.95rem; font-weight: 700; cursor: pointer; transition: all 0.15s; font-family: inherit;
+    box-shadow: 0 8px 18px -8px rgba(31,158,110,0.8); }
+  .btn-award:hover { filter: brightness(1.06); transform: translateY(-1px); }
+  .btn-reveal { padding: 0.7rem 1.4rem; border-radius: 12px; background: linear-gradient(180deg, var(--gold), var(--gold-deep));
+    color: var(--deep); border: none; font-size: 0.95rem; font-weight: 700; cursor: pointer; transition: all 0.15s; font-family: inherit;
+    box-shadow: 0 8px 18px -8px rgba(212,169,90,0.8); }
+  .btn-reveal:hover { filter: brightness(1.06); transform: translateY(-1px); }
+  .btn-close-q { padding: 0.7rem 1.4rem; border-radius: 12px; background: transparent; color: var(--text2);
+    border: 2px solid var(--border2); font-size: 0.95rem; font-weight: 600; cursor: pointer; transition: all 0.15s; font-family: inherit; }
+  .btn-close-q:hover { background: var(--surface2); color: var(--deep); }
+
+  /* ============================================================
+     TEAM COLORS (fleet banners)
+  ============================================================ */
+  .tc-0 { background: #2A7AB9; }
+  .tc-1 { background: #1f9e6e; }
+  .tc-2 { background: #D4A95A; }
+  .tc-3 { background: #d9534f; }
+  .tc-4 { background: #6EB9FF; }
+
+  /* ============================================================
+     END GAME — "Sea Celebration / Admiral Podium"
+  ============================================================ */
   #page-end { align-items: center; justify-content: center; padding: 2rem; }
-  .end-card { background: var(--surface); border: 1px solid var(--border2); border-radius: 20px; padding: 2.5rem; max-width: 500px; width: 100%; text-align: center; }
-  .end-card h1 { font-size: 1.8rem; font-weight: 700; margin-bottom: 0.5rem; }
-  .winner-badge { background: rgba(245,166,35,0.15); border: 1px solid var(--gold); border-radius: 12px; padding: 1rem; margin: 1.25rem 0; }
-  .winner-badge .w-label { font-size: 0.75rem; color: var(--gold2); text-transform: uppercase; letter-spacing: 0.1em; }
-  .winner-badge .w-name { font-size: 1.6rem; font-weight: 700; color: var(--gold); }
-  .winner-badge .w-score { font-size: 1rem; color: var(--text2); }
-  .final-scores { display: grid; gap: 0.5rem; margin-bottom: 1.5rem; }
-  .final-score-row { display: flex; align-items: center; justify-content: space-between; padding: 0.6rem 0.75rem; background: var(--surface2); border-radius: 8px; font-size: 0.9rem; }
-  .final-score-row .rank { color: var(--text3); width: 20px; }
-  .final-score-row .name { flex: 1; margin-left: 0.75rem; }
-  .final-score-row .pts { font-weight: 600; }
+  .end-card { border: 2px solid var(--gold); border-radius: 26px; padding: 2.75rem 2.5rem; max-width: 540px; width: 100%;
+    text-align: center; position: relative; overflow: hidden; box-shadow: 0 36px 80px -28px rgba(10,44,71,0.9); }
+  .end-card::before { content:'⚓'; position: absolute; top: -20px; left: -20px; font-size: 7rem; opacity: 0.06; transform: rotate(-18deg); }
+  .end-card h1 { font-size: 2rem; font-weight: 700; margin-bottom: 0.5rem; color: var(--deep); }
+  .winner-badge { background: linear-gradient(180deg, #fbe9c2, rgba(212,169,90,0.25)); border: 2px solid var(--gold);
+    border-radius: 18px; padding: 1.35rem; margin: 1.4rem 0; position: relative; }
+  .winner-badge::before { content:'🏅'; font-size: 2.4rem; display:block; margin-bottom: 0.3rem; }
+  .winner-badge .w-label { font-size: 0.78rem; color: var(--gold-deep); text-transform: uppercase; letter-spacing: 0.12em; font-weight: 700; }
+  .winner-badge .w-name { font-size: 1.8rem; font-weight: 700; color: var(--deep); margin: 0.2rem 0; }
+  .winner-badge .w-score { font-size: 1.05rem; color: var(--text2); font-weight: 600; }
+  .final-scores { display: grid; gap: 0.55rem; margin-bottom: 1.6rem; }
+  .final-score-row { display: flex; align-items: center; justify-content: space-between; padding: 0.7rem 0.85rem;
+    background: #fff; border: 1px solid var(--border); border-radius: 12px; font-size: 0.95rem; }
+  .final-score-row .rank { color: var(--text2); width: 26px; font-size: 1.1rem; }
+  .final-score-row .name { flex: 1; margin-left: 0.6rem; font-weight: 600; color: var(--deep); }
+  .final-score-row .pts { font-weight: 700; }
 
-  /* SCORE EDIT MODAL */
+  /* ============================================================
+     SCORE EDIT
+  ============================================================ */
   .score-adjust-row { display: flex; align-items: center; gap: 0.75rem; }
-  .score-adjust-row input[type=number] { width: 100px; background: var(--surface2); border: 1px solid var(--border2); color: var(--text); border-radius: 8px; padding: 0.5rem 0.75rem; font-size: 1rem; outline: none; }
-  .score-adjust-row input:focus { border-color: var(--accent); }
+  .score-adjust-row input[type=number] { width: 120px; background: #fff; border: 2px solid var(--border2);
+    color: var(--text); border-radius: 12px; padding: 0.55rem 0.85rem; font-size: 1rem; outline: none; font-family: inherit; }
+  .score-adjust-row input:focus { border-color: var(--sea); }
 
-  /* TOAST */
-  .toast { position: fixed; bottom: 1.5rem; left: 50%; transform: translateX(-50%) translateY(20px); background: var(--surface2); border: 1px solid var(--border2); border-radius: 10px; padding: 0.6rem 1.2rem; font-size: 0.9rem; color: var(--text); opacity: 0; transition: all 0.3s; pointer-events: none; z-index: 999; white-space: nowrap; }
+  /* ============================================================
+     TOAST
+  ============================================================ */
+  .toast { position: fixed; bottom: 1.5rem; left: 50%; transform: translateX(-50%) translateY(20px);
+    background: var(--deep); border: 2px solid var(--gold); border-radius: 100px; padding: 0.65rem 1.4rem;
+    font-size: 0.92rem; font-weight: 600; color: var(--parch); opacity: 0; transition: all 0.3s; pointer-events: none;
+    z-index: 999; white-space: nowrap; box-shadow: 0 16px 30px -14px rgba(10,44,71,0.8); }
   .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
-  /* BACK BUTTON */
-  .back-btn { display: inline-flex; align-items: center; gap: 0.4rem; color: var(--text2); font-size: 0.85rem; cursor: pointer; margin-bottom: 1.5rem; padding: 0.4rem 0; transition: color 0.15s; border: none; background: none; }
-  .back-btn:hover { color: var(--text); }
+  /* ============================================================
+     BACK BUTTON
+  ============================================================ */
+  .back-btn { display: inline-flex; align-items: center; gap: 0.4rem; color: var(--text2); font-size: 0.9rem;
+    font-weight: 600; cursor: pointer; padding: 0.4rem 0; transition: color 0.15s; border: none; background: none; font-family: inherit; }
+  .back-btn:hover { color: var(--deep); }
   .back-btn svg { width: 16px; height: 16px; }
+
+  @media (max-width: 640px) {
+    .team-names-grid { grid-template-columns: 1fr; }
+    .settings-sidebar { width: 64px; }
+    .settings-sidebar h2 { font-size: 0; }
+    .sidebar-item { font-size: 0; justify-content: center; }
+  }
 </style>
 </head>
 <body>
 
+<!-- OCEAN BACKGROUND -->
+<div class="ocean-bg">
+  <div class="cloud c1"></div>
+  <div class="cloud c2"></div>
+  <div class="cloud c3"></div>
+</div>
+<svg class="compass-deco" viewBox="0 0 100 100" fill="none" stroke="#F5F0DD" stroke-width="1.5" aria-hidden="true">
+  <circle cx="50" cy="50" r="46"/><circle cx="50" cy="50" r="38"/>
+  <path d="M50 6 L57 50 L50 94 L43 50 Z" fill="#D4A95A" stroke="none"/>
+  <path d="M6 50 L50 43 L94 50 L50 57 Z" fill="#F5F0DD" stroke="none" opacity="0.6"/>
+  <circle cx="50" cy="50" r="4" fill="#D4A95A" stroke="none"/>
+</svg>
+<svg class="compass-deco left" viewBox="0 0 100 100" fill="none" stroke="#F5F0DD" stroke-width="2" aria-hidden="true">
+  <circle cx="50" cy="50" r="46"/>
+  <path d="M50 10 L58 50 L50 90 L42 50 Z" fill="#D4A95A" stroke="none"/>
+</svg>
+<div class="waves" aria-hidden="true">
+  <svg class="wave-1" viewBox="0 0 1200 120" preserveAspectRatio="none"><path d="M0,60 C150,100 350,0 600,40 C850,80 1050,10 1200,50 L1200,120 L0,120 Z"/></svg>
+  <svg class="wave-2" viewBox="0 0 1200 120" preserveAspectRatio="none"><path d="M0,70 C200,30 400,90 600,60 C800,30 1000,90 1200,60 L1200,120 L0,120 Z"/></svg>
+  <svg class="wave-3" viewBox="0 0 1200 120" preserveAspectRatio="none"><path d="M0,80 C250,110 450,50 700,80 C950,110 1100,60 1200,85 L1200,120 L0,120 Z"/></svg>
+</div>
+
 <!-- LAUNCH PAGE -->
 <div id="page-launch" class="page active">
-  <div style="max-width:680px;margin:0 auto;width:100%;padding:2rem;">
+  <div style="max-width:760px;margin:0 auto;width:100%;padding:2rem;">
     <div class="launch-nav">
-      <button class="btn-secondary" onclick="showSettings()">⚙ ตั้งค่า</button>
+      <button class="btn-secondary" onclick="showSettings()">🧭 ห้องยุทธศาสตร์</button>
     </div>
-    <div class="launch-header">
-      <h1>Quiz <span>Board</span></h1>
-      <p>เกมแผ่นป้ายคำถาม แบ่งทีมแข่งกัน</p>
-    </div>
-
-    <div class="launch-card">
-      <h3>ชุดคำถาม</h3>
-      <select id="qset-select" class="qset-select">
-        <option value="">— เลือกชุดคำถาม —</option>
-      </select>
-    </div>
-
-    <div class="launch-card">
-      <h3>จำนวนทีม</h3>
-      <div class="team-count-row">
-        <label>เลือกจำนวน:</label>
-        <div class="count-btns" id="count-btns">
-          <button class="count-btn active" onclick="setTeamCount(2)" data-n="2">2</button>
-          <button class="count-btn" onclick="setTeamCount(3)" data-n="3">3</button>
-          <button class="count-btn" onclick="setTeamCount(4)" data-n="4">4</button>
-          <button class="count-btn" onclick="setTeamCount(5)" data-n="5">5</button>
-        </div>
+    <div class="hq-banner">
+      <div class="hq-flags">
+        <span class="pennant f1"></span><span class="pennant f2"></span>
+        <span class="pennant f3"></span><span class="pennant f4"></span><span class="pennant f5"></span>
       </div>
-      <div class="team-names-grid" id="team-names-grid"></div>
+      <div class="launch-header">
+        <span class="eyebrow">MARINE HEADQUARTERS</span>
+        <h1>กองบัญชาการ <span>กองเรือ</span></h1>
+        <p>เลือกชุดภารกิจ จัดกองเรือ แล้วออกเดินทางพิชิตหมู่เกาะ</p>
+        <span class="wave-sep"></span>
+      </div>
     </div>
 
-    <button class="btn-primary" id="btn-start" onclick="startGame()">▶ เริ่มเกม</button>
+    <div class="hq-deck">
+      <div class="launch-card">
+        <h3>กระดานเลือกภารกิจ</h3>
+        <select id="qset-select" class="qset-select">
+          <option value="">— เลือกชุดคำถาม —</option>
+        </select>
+      </div>
+
+      <div class="launch-card">
+        <h3>จัดกองเรือ</h3>
+        <div class="team-count-row">
+          <label>จำนวนกองเรือ:</label>
+          <div class="count-btns" id="count-btns">
+            <button class="count-btn active" onclick="setTeamCount(2)" data-n="2">2</button>
+            <button class="count-btn" onclick="setTeamCount(3)" data-n="3">3</button>
+            <button class="count-btn" onclick="setTeamCount(4)" data-n="4">4</button>
+            <button class="count-btn" onclick="setTeamCount(5)" data-n="5">5</button>
+          </div>
+        </div>
+        <div class="team-names-grid" id="team-names-grid"></div>
+      </div>
+
+      <button class="btn-primary" id="btn-start" onclick="startGame()">⚓ ออกเรือ</button>
+    </div>
   </div>
 </div>
 
@@ -259,10 +594,10 @@
 <div id="page-settings" class="page">
   <div class="settings-layout">
     <div class="settings-sidebar">
-      <h2>ตั้งค่า</h2>
+      <h2>ห้องเดินเรือ</h2>
       <div class="sidebar-item active" onclick="showSettingsTab('qsets')">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
-        ชุดคำถาม
+        แผนที่ภารกิจ
       </div>
     </div>
     <div class="settings-content">
@@ -270,9 +605,9 @@
         <div class="settings-topbar">
           <button class="back-btn" onclick="showLaunch()">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
-            กลับหน้าหลัก
+            กลับกองบัญชาการ
           </button>
-          <h2>ชุดคำถาม</h2>
+          <h2>แผนที่ภารกิจ</h2>
           <button class="btn-small" onclick="downloadExcelTemplate()" title="ดาวโหลด Template Excel">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
             Template
@@ -285,7 +620,7 @@
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
             Import JSON
           </button>
-          <button class="btn-small accent" onclick="openCreateQSet()">+ สร้างชุดใหม่</button>
+          <button class="btn-small accent" onclick="openCreateQSet()">+ สร้างแผนที่ใหม่</button>
         </div>
         <div id="qset-list" class="qset-list"></div>
       </div>
@@ -299,34 +634,34 @@
 <div id="page-game" class="page">
   <div class="game-board">
     <div class="game-header">
-      <h2 id="game-title">Quiz Board</h2>
+      <h2 id="game-title">Treasure Sea Map</h2>
       <div class="turn-badge">
         <div class="turn-dot"></div>
         <span id="turn-label">ทีม 1 เลือกคำถาม</span>
       </div>
     </div>
     <div class="categories-header">
-      <div class="cat-head cat-30">30 คะแนน</div>
-      <div class="cat-head cat-50">50 คะแนน</div>
-      <div class="cat-head cat-70">70 คะแนน</div>
-      <div class="cat-head cat-100">100 คะแนน</div>
+      <div class="cat-head cat-30">30 — เกาะเล็ก</div>
+      <div class="cat-head cat-50">50 — ท่าเรือ</div>
+      <div class="cat-head cat-70">70 — ป้อมปราการ</div>
+      <div class="cat-head cat-100">100 — มหาป้อม</div>
     </div>
     <div class="board-grid" id="board-grid"></div>
   </div>
   <div class="score-sidebar">
-    <h3>คะแนน</h3>
+    <h3>อันดับกองเรือ</h3>
     <div id="score-cards"></div>
-    <button class="btn-end-game" onclick="endGame()" style="margin-top:1rem">จบเกม</button>
+    <button class="btn-end-game" onclick="endGame()" style="margin-top:1rem">🏁 จบการเดินทาง</button>
   </div>
 </div>
 
 <!-- END PAGE -->
 <div id="page-end" class="page">
   <div class="end-card">
-    <h1>🏆 จบเกมแล้ว!</h1>
+    <h1>⚓ สิ้นสุดการเดินทาง!</h1>
     <div class="winner-badge" id="winner-display"></div>
     <div class="final-scores" id="final-scores"></div>
-    <button class="btn-primary" onclick="showLaunch()" style="max-width:220px;margin:0 auto">กลับหน้าหลัก</button>
+    <button class="btn-primary" onclick="showLaunch()" style="max-width:240px;margin:0 auto">กลับกองบัญชาการ</button>
   </div>
 </div>
 
@@ -348,7 +683,7 @@ let state = {
   qsetName: '',
 };
 
-const TEAM_COLORS = ['#7c6cfc','#2dd4a0','#f5a623','#fc6c6c','#60a5fa'];
+const TEAM_COLORS = ['#2A7AB9','#1f9e6e','#D4A95A','#d9534f','#6EB9FF'];
 const SCORE_CATS = [30, 50, 70, 100];
 
 // ========================
@@ -526,8 +861,8 @@ function openQuestion(idx) {
   if (!q || q.used || q.revealed) return;
 
   const colorMap = { 30: 'tag-30', 50: 'tag-50', 70: 'tag-70', 100: 'tag-100' };
-  const bgMap = { 30: 'rgba(37,99,235,0.2)', 50: 'rgba(124,58,237,0.2)', 70: 'rgba(219,119,6,0.2)', 100: 'rgba(220,38,38,0.2)' };
-  const txMap = { 30: '#60a5fa', 50: '#a78bfa', 70: '#fbbf24', 100: '#fca5a5' };
+  const bgMap = { 30: 'rgba(63,151,214,0.25)', 50: 'rgba(42,122,185,0.25)', 70: 'rgba(217,154,60,0.25)', 100: 'rgba(194,104,58,0.25)' };
+  const txMap = { 30: '#3f97d6', 50: '#2A7AB9', 70: '#b3863a', 100: '#c2683a' };
 
   let multiplier = 1;
   let selectedTeams = [state.currentTurn];
@@ -556,7 +891,7 @@ function openQuestion(idx) {
 
         ${revealed ? '' : `
           <div class="q-modal-actions">
-            <button class="btn-reveal" onclick="revealAnswer(${idx})">👁 ดูเฉลย</button>
+            <button class="btn-reveal" onclick="revealAnswer(${idx})">🧭 เปิดเฉลย</button>
             <button class="btn-close-q" onclick="closeQModal()">ปิด</button>
           </div>
         `}
@@ -582,8 +917,8 @@ function openQuestion(idx) {
             </div>
           </div>
           <div class="q-modal-actions" style="margin-top:1rem">
-            <button class="btn-award" onclick="awardScore(${idx})">✓ รับคะแนน</button>
-            <button class="btn-close-q" onclick="closeQModal()">ปิดโดยไม่รับ</button>
+            <button class="btn-award" onclick="awardScore(${idx})">🏴 มอบรางวัล</button>
+            <button class="btn-close-q" onclick="closeQModal()">⚓ ออกเดินทางต่อ</button>
           </div>
         ` : ''}
       </div>
@@ -674,8 +1009,8 @@ function openQuestion(idx) {
         </div>
       </div>
       <div class="q-modal-actions" style="margin-top:1rem">
-        <button class="btn-award" onclick="awardScore(${qIdx})">✓ รับคะแนน</button>
-        <button class="btn-close-q" onclick="closeQModal()">ปิดโดยไม่รับ</button>
+        <button class="btn-award" onclick="awardScore(${qIdx})">🏴 มอบรางวัล</button>
+        <button class="btn-close-q" onclick="closeQModal()">⚓ ออกเดินทางต่อ</button>
       </div>
     `;
   }
@@ -726,7 +1061,7 @@ function endGame() {
   const sorted = [...state.teams].sort((a, b) => b.score - a.score);
   const winner = sorted[0];
   document.getElementById('winner-display').innerHTML = `
-    <div class="w-label">🥇 ชนะเลิศ</div>
+    <div class="w-label">🥇 พลเรือเอกผู้พิชิต</div>
     <div class="w-name">${escHtml(winner.name)}</div>
     <div class="w-score">${winner.score} คะแนน</div>
   `;
@@ -752,7 +1087,7 @@ function renderQSetList() {
     container.innerHTML = `
       <div class="empty-state">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="2"/></svg>
-        <p>ยังไม่มีชุดคำถาม<br>กดปุ่ม "+ สร้างชุดใหม่" เพื่อเริ่ม</p>
+        <p>ยังไม่มีชุดคำถาม<br>กดปุ่ม "+ สร้างแผนที่ใหม่" เพื่อเริ่ม</p>
       </div>`;
     return;
   }
@@ -858,7 +1193,7 @@ function openQSetModal(existing) {
               </div>
             </div>
             <div class="q-list" id="q-list-modal" style="flex:1;overflow-y:auto;max-height:none">
-              ${questions.length === 0 ? '<div style="text-align:center;color:var(--text3);padding:2rem;font-size:0.85rem">ยังไม่มีคำถาม<br>เพิ่มคำถามจากแบบฟอร์มทางซ้าย</div>' : 
+              ${questions.length === 0 ? '<div style="text-align:center;color:var(--text2);padding:2rem;font-size:0.85rem">ยังไม่มีคำถาม<br>เพิ่มคำถามจากแบบฟอร์มทางซ้าย</div>' : 
                 questions.map((q, i) => `
                   <div class="q-list-item">
                     <span class="tag tag-${q.score}" style="flex-shrink:0">${q.score}</span>
