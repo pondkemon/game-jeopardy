@@ -420,11 +420,13 @@
     color: var(--deep); text-align: center; }
   .answer-section { background: #fff; border: 2px solid var(--gold); border-radius: 14px; padding: 1.1rem 1.35rem;
     transition: filter 0.3s; }
-  .answer-section.hidden-ans { filter: blur(8px); user-select: none; pointer-events: none; }
+  .answer-section.hidden-ans { user-select: none; }
   .answer-label { font-size: 0.74rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--gold-deep);
     margin-bottom: 0.4rem; font-weight: 700; }
   .answer-label::before { content:'🗝️ '; }
   .answer-text { font-size: 1.1rem; color: var(--green); font-weight: 600; }
+  .answer-placeholder { font-size: 0.98rem; color: var(--text3solid); font-style: italic; text-align: center;
+    padding: 0.4rem 0; letter-spacing: 0.02em; }
   .q-modal-actions { display: flex; gap: 0.75rem; margin-top: 1.35rem; flex-wrap: wrap; }
 
   .score-edit-section { background: #fff; border: 2px dashed var(--gold); border-radius: 14px;
@@ -886,7 +888,9 @@ function openQuestion(idx) {
         
         <div class="answer-section ${revealed ? '' : 'hidden-ans'}" id="ans-section">
           <div class="answer-label">เฉลย</div>
-          <div class="answer-text">${escHtml(q.answer)}</div>
+          ${revealed
+            ? `<div class="answer-text">${escHtml(q.answer)}</div>`
+            : `<div class="answer-placeholder">????????</div>`}
         </div>
 
         ${revealed ? '' : `
@@ -998,6 +1002,8 @@ function openQuestion(idx) {
         <div class="answer-label">เฉลย</div>
         <div class="answer-text">${escHtml(q.answer)}</div>
       </div>
+      <!-- rebuildQModal only ever runs after reveal, so the real answer is safe to render here -->
+    
       <div class="score-edit-section">
         <div class="score-edit-title">คะแนนที่จะรับ</div>
         <div class="score-display">${eff}</div>
