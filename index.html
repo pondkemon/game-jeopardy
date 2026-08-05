@@ -918,7 +918,7 @@ function openQuestion(idx) {
           </div>
           <div class="q-modal-actions" style="margin-top:1rem">
             <button class="btn-award" onclick="awardScore(${idx})">🚩 มอบรางวัล</button>
-            <button class="btn-close-q" onclick="closeQModal()">⚓ ออกเดินทางต่อ</button>
+            <button class="btn-close-q" onclick="closeAndNext(${idx})">⚓ ออกเดินทางต่อ</button>
           </div>
         ` : ''}
       </div>
@@ -973,6 +973,15 @@ function openQuestion(idx) {
     if (m) m.remove();
   };
 
+  window.closeAndNext = function(qIdx) {
+    state.questions[qIdx].used = true;
+    state.questions[qIdx].revealed = true;
+    closeQModal();
+    renderBoard();
+    renderScoreCards();
+    nextTurn();
+  };
+
   function rebuildQModal(qIdx) {
     const { multiplier, selectedTeams, revealed } = window._qState;
     const q = state.questions[qIdx];
@@ -1001,7 +1010,7 @@ function openQuestion(idx) {
           <div class="team-select-title">เลือกทีมที่รับคะแนน (เลือกได้หลายทีม)</div>
           <div class="team-select-grid">
             ${state.teams.map((t, i) => `
-              <button class="team-select-btn ${selectedTeams.includes(i) ? 'selected' : ''}" 
+              <button class="team-select-btn ${selectedTeams.includes(i) ? 'selected' : ''}"
                 style="${selectedTeams.includes(i) ? `background:${t.color}` : ''}"
                 onclick="toggleTeamSel(${qIdx}, ${i})">${escHtml(t.name)}</button>
             `).join('')}
@@ -1010,7 +1019,7 @@ function openQuestion(idx) {
       </div>
       <div class="q-modal-actions" style="margin-top:1rem">
         <button class="btn-award" onclick="awardScore(${qIdx})">🚩 มอบรางวัล</button>
-        <button class="btn-close-q" onclick="closeQModal()">⚓ ออกเดินทางต่อ</button>
+        <button class="btn-close-q" onclick="closeAndNext(${qIdx})">⚓ ออกเดินทางต่อ</button>
       </div>
     `;
   }
