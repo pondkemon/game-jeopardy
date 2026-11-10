@@ -3,48 +3,48 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Marine Fleet Quiz — สมรภูมิทะเลคำถาม</title>
+<title>Magic Academy Quiz — ศึกประลองเวทมนตร์</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Mitr:wght@400;500;600;700&family=Sriracha&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Mitr:wght@400;500;600;700&family=Cinzel:wght@600;700&display=swap" rel="stylesheet">
 <style>
   :root {
-    /* === MARINE PALETTE === */
-    --deep: #0E3A5D;        /* deep navy */
-    --deep2: #0a2c47;
-    --deep3: #0e3a5dc4;
-    --sea: #2A7AB9;         /* mid sea blue */
-    --sky: #6EB9FF;         /* light sky blue */
-    --gold: #D4A95A;        /* command gold */
-    --gold-deep: #b3863a;
-    --parch: #F5F0DD;       /* parchment cream */
-    --parch2: #efe6c8;
-    --wood: #7a5230;
-    --wood2: #5d3d22;
+    /* === ARCANE PALETTE === */
+    --deep: #1a1033;        /* midnight violet */
+    --deep2: #0f0a22;
+    --deep3: #1a1033;
+    --sea: #6a3fb0;         /* arcane purple */
+    --sky: #b79cff;         /* spell glow */
+    --gold: #D4A95A;        /* enchanted gold */
+    --gold-deep: #a97b2c;
+    --parch: #F3E7C9;       /* old parchment */
+    --parch2: #ead9b0;
+    --wood: #5b3a29;
+    --wood2: #3e2619;
 
     /* semantic */
     --bg: var(--deep);
     --surface: var(--parch);
     --surface2: var(--parch2);
-    --surface3: #e6dcbb;
-    --border: rgba(14,58,93,0.18);
-    --border2: rgba(14,58,93,0.32);
-    --text: #11314a;
-    --text2: #3c5d77;
-    --text3: #6c84996b;
-    --text3solid: #6c8499;
+    --surface3: #dfcf9f;
+    --border: rgba(26,16,51,0.18);
+    --border2: rgba(26,16,51,0.32);
+    --text: #2b1d3a;
+    --text2: #5a4670;
+    --text3: #85739a6b;
+    --text3solid: #85739a;
     --accent: var(--gold);
     --accent2: var(--gold-deep);
     --gold2: var(--gold-deep);
     --green: #1f9e6e;
-    --red: #d9534f;
+    --red: #c0392b;
     --blue: var(--sea);
 
     /* score category accents */
-    --c30: #3f97d6;   /* small island */
-    --c50: #2A7AB9;   /* harbor */
-    --c70: #d99a3c;   /* fortress */
-    --c100: #c2683a;  /* grand fortress */
+    --c30: #5b7fe0;   /* basic charms */
+    --c50: #2f9e72;   /* potions */
+    --c70: #c9962e;   /* ancient scrolls */
+    --c100: #b5302f;  /* dragon spells */
 
     --radius: 20px;
   }
@@ -61,55 +61,99 @@
   }
 
   /* ============================================================
-     OCEAN BACKGROUND (fixed, behind everything)
+     NIGHT SKY BACKGROUND (fixed, behind everything)
   ============================================================ */
-  .ocean-bg { position: fixed; inset: 0; z-index: -3; overflow: hidden;
+  .sky-bg { position: fixed; inset: 0; z-index: -4; overflow: hidden;
     background:
       linear-gradient(180deg,
-        #bfe6ff 0%,
-        #8ecbf5 18%,
-        var(--sky) 34%,
-        var(--sea) 56%,
-        var(--deep) 82%,
-        var(--deep2) 100%);
+        #070416 0%,
+        #120a2e 28%,
+        #231447 55%,
+        #3a2063 78%,
+        #5a2f73 100%);
   }
-  /* sun glow on horizon */
-  .ocean-bg::before {
-    content: ''; position: absolute; top: 6%; left: 50%; width: 420px; height: 420px;
+  /* horizon glow */
+  .sky-bg::after {
+    content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 45%;
+    background: radial-gradient(ellipse at 50% 100%, rgba(255,170,110,0.28) 0%, rgba(170,100,200,0.18) 40%, transparent 70%);
+  }
+  /* stars */
+  .stars { position: absolute; inset: 0; background-repeat: no-repeat; background-size: 100% 100%;
+    background-image:
+      radial-gradient(1.5px 1.5px at 6% 12%, #fff 50%, transparent 52%),
+      radial-gradient(1px 1px at 14% 34%, #fff 50%, transparent 52%),
+      radial-gradient(2px 2px at 22% 8%, #ffe9a8 50%, transparent 52%),
+      radial-gradient(1px 1px at 31% 26%, #fff 50%, transparent 52%),
+      radial-gradient(1.5px 1.5px at 40% 14%, #fff 50%, transparent 52%),
+      radial-gradient(1px 1px at 47% 38%, #fff 50%, transparent 52%),
+      radial-gradient(2px 2px at 55% 6%, #fff 50%, transparent 52%),
+      radial-gradient(1px 1px at 63% 22%, #cfd8ff 50%, transparent 52%),
+      radial-gradient(1.5px 1.5px at 71% 40%, #fff 50%, transparent 52%),
+      radial-gradient(1px 1px at 78% 10%, #fff 50%, transparent 52%),
+      radial-gradient(2px 2px at 86% 30%, #ffe9a8 50%, transparent 52%),
+      radial-gradient(1px 1px at 93% 18%, #fff 50%, transparent 52%),
+      radial-gradient(1px 1px at 9% 52%, #fff 50%, transparent 52%),
+      radial-gradient(1.5px 1.5px at 96% 48%, #fff 50%, transparent 52%);
+    animation: twinkle 4s ease-in-out infinite; }
+  .stars.s2 { animation-delay: -2s; animation-duration: 5.5s;
+    background-image:
+      radial-gradient(1px 1px at 4% 24%, #fff 50%, transparent 52%),
+      radial-gradient(1.5px 1.5px at 18% 18%, #fff 50%, transparent 52%),
+      radial-gradient(1px 1px at 27% 44%, #ffe9a8 50%, transparent 52%),
+      radial-gradient(2px 2px at 36% 30%, #fff 50%, transparent 52%),
+      radial-gradient(1px 1px at 44% 4%, #fff 50%, transparent 52%),
+      radial-gradient(1.5px 1.5px at 52% 28%, #cfd8ff 50%, transparent 52%),
+      radial-gradient(1px 1px at 60% 46%, #fff 50%, transparent 52%),
+      radial-gradient(2px 2px at 68% 12%, #fff 50%, transparent 52%),
+      radial-gradient(1px 1px at 76% 26%, #fff 50%, transparent 52%),
+      radial-gradient(1.5px 1.5px at 83% 6%, #fff 50%, transparent 52%),
+      radial-gradient(1px 1px at 90% 42%, #ffe9a8 50%, transparent 52%),
+      radial-gradient(1px 1px at 98% 8%, #fff 50%, transparent 52%); }
+  @keyframes twinkle { 0%,100% { opacity: 1; } 50% { opacity: 0.35; } }
+
+  /* moon */
+  .moon { position: absolute; top: 7%; right: 12%; width: 92px; height: 92px; border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%, #fffbe6, #f1e6b8 60%, #d9c98c);
+    box-shadow: 0 0 60px 22px rgba(255,244,200,0.3), 0 0 140px 60px rgba(180,150,255,0.15); }
+
+  /* floating candles */
+  .candle { position: absolute; width: 10px; height: 30px; border-radius: 2px;
+    background: linear-gradient(90deg, #e9dcc0, #fff6dc 50%, #d8c79f);
+    opacity: 0.92; animation: bob 6s ease-in-out infinite; animation-delay: var(--d, 0s); }
+  .candle::before { content: ''; position: absolute; left: 50%; top: -17px; width: 9px; height: 16px;
     transform: translateX(-50%);
-    background: radial-gradient(circle, rgba(255,247,224,0.85) 0%, rgba(255,240,200,0.25) 40%, transparent 70%);
-    border-radius: 50%;
-  }
-  /* clouds */
-  .cloud { position: absolute; background: rgba(255,255,255,0.85); border-radius: 100px;
-    filter: blur(2px); opacity: 0.9; animation: drift linear infinite; }
-  .cloud::before, .cloud::after { content:''; position:absolute; background:inherit; border-radius:50%; }
-  .cloud.c1 { width: 140px; height: 34px; top: 8%; left: -180px; animation-duration: 75s; }
-  .cloud.c1::before { width: 60px; height: 60px; top: -26px; left: 24px; }
-  .cloud.c1::after { width: 44px; height: 44px; top: -16px; left: 80px; }
-  .cloud.c2 { width: 100px; height: 26px; top: 16%; left: -160px; animation-duration: 95s; animation-delay: -30s; opacity:0.7; }
-  .cloud.c2::before { width: 46px; height: 46px; top: -22px; left: 18px; }
-  .cloud.c2::after { width: 34px; height: 34px; top: -12px; left: 56px; }
-  .cloud.c3 { width: 120px; height: 30px; top: 4%; left: -160px; animation-duration: 110s; animation-delay: -60s; opacity:0.6; }
-  .cloud.c3::before { width: 52px; height: 52px; top: -24px; left: 22px; }
-  @keyframes drift { to { transform: translateX(120vw); } }
+    background: radial-gradient(ellipse at 50% 70%, #fff7c2 0%, #ffc65a 45%, rgba(255,150,40,0) 75%);
+    border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+    filter: drop-shadow(0 0 8px #ffc65a); animation: flicker 1.3s ease-in-out infinite alternate; }
+  .candle::after { content: ''; position: absolute; left: 50%; top: -30px; width: 46px; height: 46px; transform: translateX(-50%);
+    background: radial-gradient(circle, rgba(255,200,100,0.28), transparent 70%); border-radius: 50%; }
+  @keyframes bob { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-14px); } }
+  @keyframes flicker { from { transform: translateX(-50%) scaleY(0.88); } to { transform: translateX(-50%) scaleY(1.12); } }
 
-  /* layered animated waves at the bottom of the ocean */
-  .waves { position: fixed; left: 0; right: 0; bottom: 0; height: 220px; z-index: -2; pointer-events: none; }
-  .waves svg { position: absolute; bottom: 0; width: 200%; height: 100%; }
-  .wave-1 { fill: rgba(110,185,255,0.22); animation: wave 14s linear infinite; }
-  .wave-2 { fill: rgba(42,122,185,0.30); animation: wave 9s linear infinite reverse; }
-  .wave-3 { fill: rgba(14,58,93,0.45); animation: wave 18s linear infinite; }
-  @keyframes wave { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+  /* castle silhouette */
+  .castle { position: fixed; left: 0; right: 0; bottom: 0; height: 300px; z-index: -3; pointer-events: none; }
+  .castle svg { width: 100%; height: 100%; display: block; }
+  .castle .win { fill: #ffcf6b; animation: winflick 3.2s ease-in-out infinite; }
+  .castle .win:nth-child(2n) { animation-delay: -1.1s; }
+  .castle .win:nth-child(3n) { animation-delay: -2.2s; }
+  @keyframes winflick { 0%,100% { opacity: 1; } 50% { opacity: 0.45; } }
 
-  /* faint compass + map texture overlay */
+  /* drifting mist */
+  .fog { position: fixed; left: 0; right: 0; bottom: 0; height: 190px; z-index: -2; pointer-events: none; overflow: hidden; }
+  .fog div { position: absolute; bottom: 0; left: 0; width: 200%; height: 100%;
+    background-image: radial-gradient(ellipse at 50% 100%, rgba(200,180,255,0.20), transparent 65%);
+    background-size: 25% 100%; background-repeat: repeat-x; animation: mist 40s linear infinite; }
+  .fog div + div { height: 70%; opacity: 0.8; animation-duration: 28s; animation-direction: reverse; }
+  @keyframes mist { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+  /* rune circles */
   .compass-deco { position: fixed; right: 4%; bottom: 8%; width: 260px; height: 260px; z-index: -1;
-    opacity: 0.12; pointer-events: none; animation: spin 90s linear infinite; }
-  .compass-deco.left { right: auto; left: 3%; top: 10%; bottom: auto; width: 180px; height: 180px; opacity: 0.1; animation-duration: 120s; }
+    opacity: 0.14; pointer-events: none; animation: spin 90s linear infinite; }
+  .compass-deco.left { right: auto; left: 3%; top: 10%; bottom: auto; width: 180px; height: 180px; opacity: 0.12; animation-duration: 120s; animation-direction: reverse; }
   @keyframes spin { to { transform: rotate(360deg); } }
 
   @media (prefers-reduced-motion: reduce) {
-    .cloud, .wave-1, .wave-2, .wave-3, .compass-deco { animation: none !important; }
+    .stars, .candle, .candle::before, .castle .win, .fog div, .compass-deco { animation: none !important; }
   }
 
   /* ============================================================
@@ -124,7 +168,7 @@
   }
 
   /* ============================================================
-     LAUNCH PAGE — "Marine Headquarters"
+     LAUNCH PAGE — "Great Hall"
   ============================================================ */
   #page-launch { padding: 2rem; width: 100%; }
   .launch-nav { display: flex; justify-content: flex-end; margin-bottom: 1.25rem; }
@@ -132,39 +176,47 @@
   .hq-banner { text-align: center; margin-bottom: 2rem; padding-top: 0.5rem; position: relative; }
   .hq-flags { display: flex; justify-content: center; gap: 0.5rem; margin-bottom: 0.75rem; }
   .mini-flag { width: 0; height: 0; }
-  .pennant { display:inline-block; width: 46px; height: 26px; clip-path: polygon(0 0, 100% 0, 78% 50%, 100% 100%, 0 100%);
-    box-shadow: inset 0 -3px 0 rgba(0,0,0,0.12); }
-  .pennant.f1 { background: var(--gold); }
-  .pennant.f2 { background: #e8efff; }
-  .pennant.f3 { background: var(--red); }
-  .pennant.f4 { background: #2dd4a0; }
-  .pennant.f5 { background: var(--gold); }
+  /* house banners */
+  .pennant { display:inline-block; width: 30px; height: 56px; clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 80%, 0 100%);
+    box-shadow: inset 0 -3px 0 rgba(0,0,0,0.12); position: relative; transform-origin: top center;
+    animation: sway 4s ease-in-out infinite; }
+  .pennant:nth-child(2n) { animation-delay: -1.3s; }
+  .pennant:nth-child(3n) { animation-delay: -2.4s; }
+  @keyframes sway { 0%,100% { transform: rotate(-2deg); } 50% { transform: rotate(2deg); } }
+  .pennant.f1 { background: linear-gradient(180deg, #b3262e 60%, #d4a95a 60%, #d4a95a 72%, #b3262e 72%); }
+  .pennant.f2 { background: linear-gradient(180deg, #1f8a5b 60%, #cfd6dc 60%, #cfd6dc 72%, #1f8a5b 72%); }
+  .pennant.f3 { background: linear-gradient(180deg, #2f6bd1 60%, #c58b4a 60%, #c58b4a 72%, #2f6bd1 72%); }
+  .pennant.f4 { background: linear-gradient(180deg, #e0a81a 60%, #2b2230 60%, #2b2230 72%, #e0a81a 72%); }
+  .pennant.f5 { background: linear-gradient(180deg, #7a45c4 60%, #d4a95a 60%, #d4a95a 72%, #7a45c4 72%); }
 
   .launch-header { text-align: center; margin-bottom: 0.5rem; }
-  .launch-header .eyebrow { display:inline-block; letter-spacing: 0.28em; font-size: 0.72rem; font-weight: 600;
-    color: var(--parch); background: rgba(14,58,93,0.55); padding: 0.35rem 1rem; border-radius: 100px;
-    border: 1px solid rgba(212,169,90,0.5); margin-bottom: 0.9rem; }
+  .launch-header .eyebrow { display:inline-block; letter-spacing: 0.3em; font-size: 0.74rem; font-weight: 700;
+    font-family: 'Cinzel', 'Mitr', serif;
+    color: var(--parch); background: rgba(26,16,51,0.6); padding: 0.35rem 1.1rem; border-radius: 100px;
+    border: 1px solid rgba(212,169,90,0.6); margin-bottom: 0.9rem; }
   .launch-header h1 { font-size: clamp(2.2rem, 5vw, 3.4rem); font-weight: 700; letter-spacing: -0.01em;
-    color: #fff; text-shadow: 0 2px 0 rgba(14,58,93,0.45), 0 6px 18px rgba(10,44,71,0.5); line-height: 1.1; }
-  .launch-header h1 span { color: var(--gold); }
-  .launch-header p { color: #eaf4ff; margin-top: 0.6rem; font-size: 1rem; text-shadow: 0 1px 6px rgba(10,44,71,0.6); }
+    color: #fff; text-shadow: 0 0 18px rgba(183,156,255,0.7), 0 4px 18px rgba(15,10,34,0.8); line-height: 1.1; }
+  .launch-header h1 span { color: var(--gold); text-shadow: 0 0 20px rgba(212,169,90,0.8), 0 4px 18px rgba(15,10,34,0.8); }
+  .launch-header p { color: #e8defa; margin-top: 0.6rem; font-size: 1rem; text-shadow: 0 1px 8px rgba(15,10,34,0.8); }
 
-  /* wave separator under header */
-  .wave-sep { display:block; width: 200px; height: 16px; margin: 1rem auto 0;
-    background: radial-gradient(circle at 12px -4px, transparent 10px, var(--gold) 11px, var(--gold) 12px, transparent 13px);
-    background-size: 24px 16px; background-repeat: repeat-x; opacity: 0.85; }
+  /* star separator under header */
+  .wave-sep { display:flex; align-items:center; justify-content:center; gap:0.7rem; width: 240px; margin: 1rem auto 0;
+    color: var(--gold); font-size: 0.95rem; }
+  .wave-sep::before, .wave-sep::after { content:''; flex:1; height:1px;
+    background: linear-gradient(90deg, transparent, var(--gold)); }
+  .wave-sep::after { background: linear-gradient(270deg, transparent, var(--gold)); }
 
   .hq-deck { max-width: 720px; margin: 0 auto; width: 100%; }
 
   .launch-card {
-    border: 1px solid rgba(212,169,90,0.55);
+    border: 1px solid rgba(212,169,90,0.65);
     border-radius: var(--radius);
     padding: 1.5rem;
     margin-bottom: 1.25rem;
     position: relative;
-    box-shadow: 0 18px 40px -22px rgba(10,44,71,0.8);
+    box-shadow: 0 18px 40px -22px rgba(15,10,34,0.9), 0 0 24px -8px rgba(183,156,255,0.35);
   }
-  /* corner rivets to feel like a command board */
+  /* corner studs like an old spellbook */
   .launch-card::before, .launch-card::after { content:''; position:absolute; width: 9px; height: 9px; border-radius: 50%;
     background: var(--gold-deep); top: 12px; }
   .launch-card::before { left: 12px; }
@@ -172,11 +224,11 @@
 
   .launch-card h3 { font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.14em;
     color: var(--gold-deep); margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem; }
-  .launch-card h3::before { content:'⚓'; font-size: 1rem; color: var(--sea); }
+  .launch-card h3::before { content:'🔮'; font-size: 1rem; color: var(--sea); }
 
-  .qset-select { width: 100%; background: #fff; border: 2px solid var(--border2); color: var(--text);
+  .qset-select { width: 100%; background: #fffaf0; border: 2px solid var(--border2); color: var(--text);
     border-radius: 12px; padding: 0.75rem 1rem; font-size: 1rem; outline: none; appearance: none; cursor: pointer;
-    font-family: inherit; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%230E3A5D' stroke-width='3'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+    font-family: inherit; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%231a1033' stroke-width='3'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
     background-repeat: no-repeat; background-position: right 1rem center; }
   .qset-select:focus { border-color: var(--sea); }
 
@@ -184,41 +236,42 @@
   .team-count-row label { color: var(--text2); font-size: 0.92rem; flex-shrink: 0; }
   .count-btns { display: flex; gap: 0.5rem; }
   .count-btn { width: 40px; height: 40px; border-radius: 12px; border: 2px solid var(--border2);
-    background: #fff; color: var(--text); font-size: 1.05rem; font-weight: 600; cursor: pointer;
+    background: #fffaf0; color: var(--text); font-size: 1.05rem; font-weight: 600; cursor: pointer;
     display: flex; align-items: center; justify-content: center; transition: all 0.15s; font-family: inherit; }
-  .count-btn.active, .count-btn:hover { background: var(--sea); border-color: var(--sea); color: #fff; }
+  .count-btn.active, .count-btn:hover { background: var(--sea); border-color: var(--sea); color: #fff; box-shadow: 0 0 14px rgba(106,63,176,0.55); }
 
-  /* team names rendered as ship cards */
+  /* team names rendered as house crest cards */
   .team-names-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
-  .team-name-wrap { position: relative; background: #fff; border: 2px solid var(--border);
+  .team-name-wrap { position: relative; background: #fffaf0; border: 2px solid var(--border);
     border-radius: 14px; padding: 0.65rem 0.75rem 0.65rem 0.65rem; display: flex; align-items: center; gap: 0.6rem;
     transition: border-color 0.15s, transform 0.15s; }
   .team-name-wrap:focus-within { border-color: var(--sea); transform: translateY(-1px); }
-  /* ship flag swatch (was .team-dot) */
+  /* house crest swatch (was .team-dot) */
   .team-dot { position: static; transform: none; width: 30px !important; height: 30px !important;
-    border-radius: 8px !important; flex-shrink: 0; box-shadow: inset 0 -4px 0 rgba(0,0,0,0.18); position: relative !important; }
-  .team-dot::after { content:'⛵'; position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
-    font-size: 0.9rem; }
+    border-radius: 8px 8px 14px 14px !important; flex-shrink: 0; box-shadow: inset 0 -4px 0 rgba(0,0,0,0.2); position: relative !important; }
+  .team-dot::after { content:'✨'; position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+    font-size: 0.85rem; }
   .team-name-input { flex: 1; background: transparent; border: none; color: var(--text);
     font-size: 0.95rem; font-weight: 500; outline: none; font-family: inherit; }
   .team-name-input.with-dot { padding-left: 0; }
   .team-name-input::placeholder { color: var(--text3solid); }
 
-  /* GOLDEN COMMAND BUTTON */
-  .btn-primary { width: 100%; padding: 1rem; background: linear-gradient(180deg, #e6bd6e, var(--gold) 55%, var(--gold-deep));
+  /* GOLDEN SPELL BUTTON */
+  .btn-primary { width: 100%; padding: 1rem; background: linear-gradient(180deg, #ecc778, var(--gold) 55%, var(--gold-deep));
     color: var(--deep); border: none; border-radius: 16px; font-size: 1.25rem; font-weight: 700; cursor: pointer;
-    transition: all 0.18s; margin-top: 0.5rem; font-family: inherit; letter-spacing: 0.02em; }
-  .btn-primary:hover { transform: translateY(-2px);}
+    transition: all 0.18s; margin-top: 0.5rem; font-family: inherit; letter-spacing: 0.02em;
+    box-shadow: 0 0 22px -4px rgba(212,169,90,0.6); }
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 0 30px 0 rgba(212,169,90,0.85); }
   .btn-primary:active { transform: translateY(2px); }
   .btn-primary:disabled { opacity: 0.45; cursor: not-allowed; transform: none; box-shadow: none; }
 
-  .btn-secondary { padding: 0.6rem 1.2rem; background: rgba(255,255,255,0.92); color: var(--deep);
-    border: 2px solid rgba(212,169,90,0.7); border-radius: 12px; font-size: 0.9rem; font-weight: 600;
+  .btn-secondary { padding: 0.6rem 1.2rem; background: rgba(255,250,240,0.94); color: var(--deep);
+    border: 2px solid rgba(212,169,90,0.75); border-radius: 12px; font-size: 0.9rem; font-weight: 600;
     cursor: pointer; transition: all 0.15s; font-family: inherit; }
   .btn-secondary:hover { background: #fff; border-color: var(--gold-deep); }
 
   /* ============================================================
-     SETTINGS PAGE — "Navigation / Strategy Room"
+     SETTINGS PAGE — "Library of Tomes"
   ============================================================ */
   #page-settings { padding: 0; }
   .settings-layout { display: flex; min-height: 100vh; }
@@ -226,42 +279,42 @@
     padding: 1.5rem 1rem; flex-shrink: 0; }
   .settings-sidebar h2 { font-size: 1.05rem; font-weight: 700; padding: 0.5rem 0.75rem; color: var(--gold);
     display: flex; align-items: center; gap: 0.5rem; }
-  .settings-sidebar h2::before { content:'🧭'; }
+  .settings-sidebar h2::before { content:'📖'; }
   .sidebar-item { display: flex; align-items: center; gap: 0.6rem; padding: 0.7rem 0.85rem; border-radius: 12px;
-    cursor: pointer; color: #cfe2f2; font-size: 0.95rem; transition: all 0.15s; margin-top: 0.5rem; }
-  .sidebar-item:hover, .sidebar-item.active { background: rgba(212,169,90,0.18); color: #fff; }
+    cursor: pointer; color: #d9ccf0; font-size: 0.95rem; transition: all 0.15s; margin-top: 0.5rem; }
+  .sidebar-item:hover, .sidebar-item.active { background: rgba(212,169,90,0.2); color: #fff; }
   .sidebar-item svg { width: 18px; height: 18px; opacity: 0.9; }
 
   .settings-content { flex: 1; padding: 2.25rem; overflow-y: auto;
+    background-color: rgba(243,231,201,0.92);
     background-image:
-      radial-gradient(circle at 1px 1px, rgba(14,58,93,0.07) 1px, transparent 0);
+      radial-gradient(circle at 1px 1px, rgba(26,16,51,0.08) 1px, transparent 0);
     background-size: 22px 22px; }
   .settings-content h2 { font-size: 1.4rem; font-weight: 700; margin-bottom: 1.5rem; color: var(--deep); }
   .settings-topbar { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
   .settings-topbar h2 { margin: 0; flex: 1; }
 
   .qset-list { display: grid; gap: 1rem; }
-  /* paper-map style cards */
+  /* tome cards */
   .qset-item { border: 2px solid var(--gold); border-radius: 16px; padding: 1.1rem 1.35rem;
     display: flex; align-items: center; justify-content: space-between; position: relative; overflow: hidden;
-    box-shadow: 0 14px 30px -20px rgba(10,44,71,0.7);
+    box-shadow: 0 14px 30px -20px rgba(15,10,34,0.8);
     background:
-      repeating-linear-gradient(45deg, rgba(212,169,90,0.05) 0 12px, transparent 12px 24px),
+      repeating-linear-gradient(45deg, rgba(212,169,90,0.07) 0 12px, transparent 12px 24px),
       var(--surface); }
-  .qset-item::before { content:'🗺️'; position:absolute; right: -8px; bottom: -10px; font-size: 4rem; opacity: 0.08; transform: rotate(-12deg); }
+  .qset-item::before { content:'📜'; position:absolute; right: -8px; bottom: -10px; font-size: 4rem; opacity: 0.1; transform: rotate(-12deg); }
   .qset-item-info h4 { font-size: 1.05rem; font-weight: 600; color: var(--deep); }
   .qset-item-info p { font-size: 0.82rem; color: var(--text2); margin-top: 4px; display:flex; flex-wrap:wrap; gap:4px; align-items:center; }
   .qset-item-actions { display: flex; gap: 0.5rem; z-index: 1; }
 
   .btn-icon { width: 36px; height: 36px; border-radius: 10px; border: 2px solid var(--border2);
-    background: #fff; color: var(--text2); cursor: pointer; display: flex; align-items: center; justify-content: center;
+    background: #fffaf0; color: var(--text2); cursor: pointer; display: flex; align-items: center; justify-content: center;
     transition: all 0.15s; }
   .btn-icon:hover { background: var(--sea); color: #fff; border-color: var(--sea); }
   .btn-icon.danger:hover { background: var(--red); color: #fff; border-color: var(--red); }
 
-  /* toolbox-style import buttons */
   .btn-small { padding: 0.55rem 1rem; border-radius: 12px; border: 2px solid var(--border2);
-    background: #fff; color: var(--deep); font-size: 0.85rem; font-weight: 600; cursor: pointer;
+    background: #fffaf0; color: var(--deep); font-size: 0.85rem; font-weight: 600; cursor: pointer;
     display: flex; align-items: center; gap: 0.45rem; transition: all 0.15s; font-family: inherit; }
   .btn-small:hover { background: var(--surface2); border-color: var(--gold-deep); }
   .btn-small.accent { background: linear-gradient(180deg, var(--gold), var(--gold-deep)); border-color: var(--gold-deep); color: var(--deep); }
@@ -269,37 +322,37 @@
 
   .tag { display: inline-flex; align-items: center; gap: 3px; padding: 2px 9px; border-radius: 20px;
     font-size: 0.74rem; font-weight: 600; }
-  .tag-30 { background: rgba(63,151,214,0.18); color: var(--c30); }
-  .tag-50 { background: rgba(42,122,185,0.18); color: var(--c50); }
-  .tag-70 { background: rgba(217,154,60,0.2); color: var(--gold-deep); }
-  .tag-100 { background: rgba(194,104,58,0.18); color: var(--c100); }
+  .tag-30 { background: rgba(91,127,224,0.18); color: var(--c30); }
+  .tag-50 { background: rgba(47,158,114,0.18); color: var(--c50); }
+  .tag-70 { background: rgba(201,150,46,0.22); color: var(--gold-deep); }
+  .tag-100 { background: rgba(181,48,47,0.18); color: var(--c100); }
 
   .empty-state { text-align: center; padding: 3rem; color: var(--text2); border: 2px dashed var(--border2);
-    border-radius: 16px; background: rgba(255,255,255,0.5); }
+    border-radius: 16px; background: rgba(255,255,255,0.45); }
   .empty-state svg { width: 52px; height: 52px; margin: 0 auto 1rem; opacity: 0.4; }
 
   /* ============================================================
      GENERIC MODAL
   ============================================================ */
-  .modal-overlay { position: fixed; inset: 0; background: rgba(10,44,71,0.62);
+  .modal-overlay { position: fixed; inset: 0; background: rgba(10,6,24,0.7);
     display: flex; align-items: center; justify-content: center; z-index: 100; backdrop-filter: blur(4px); padding: 1rem; }
   .modal { border: 2px solid var(--gold); border-radius: var(--radius); padding: 1.85rem; width: 560px;
-    max-width: 95vw; max-height: 92vh; overflow-y: auto; box-shadow: 0 30px 70px -25px rgba(10,44,71,0.9); }
+    max-width: 95vw; max-height: 92vh; overflow-y: auto; box-shadow: 0 30px 70px -25px rgba(0,0,0,0.9), 0 0 40px -10px rgba(183,156,255,0.45); }
   .modal h3 { font-size: 1.2rem; font-weight: 700; margin-bottom: 1.25rem; color: var(--deep); }
   .modal-footer { display: flex; gap: 0.75rem; justify-content: flex-end; margin-top: 1.25rem;
     padding-top: 1rem; border-top: 1px solid var(--border); }
   .form-group { margin-bottom: 1rem; }
   .form-group label { display: block; font-size: 0.86rem; font-weight: 500; color: var(--text2); margin-bottom: 0.4rem; }
-  .form-input { width: 100%; background: #fff; border: 2px solid var(--border2); color: var(--text);
+  .form-input { width: 100%; background: #fffaf0; border: 2px solid var(--border2); color: var(--text);
     border-radius: 12px; padding: 0.65rem 0.85rem; font-size: 0.95rem; outline: none; transition: border-color 0.15s; font-family: inherit; }
   .form-input:focus { border-color: var(--sea); }
   textarea.form-input { resize: vertical; min-height: 80px; }
   .score-options { display: flex; gap: 0.5rem; }
   .score-option { flex: 1; padding: 0.6rem; border-radius: 12px; border: 2px solid var(--border2);
-    background: #fff; color: var(--text2); cursor: pointer; text-align: center; font-size: 0.95rem; font-weight: 600; transition: all 0.15s; }
-  .score-option.selected { border-color: var(--gold); background: rgba(212,169,90,0.18); color: var(--deep); }
+    background: #fffaf0; color: var(--text2); cursor: pointer; text-align: center; font-size: 0.95rem; font-weight: 600; transition: all 0.15s; }
+  .score-option.selected { border-color: var(--gold); background: rgba(212,169,90,0.22); color: var(--deep); }
   .q-list { display: grid; gap: 0.5rem; max-height: 300px; overflow-y: auto; }
-  .q-list-item { background: #fff; border: 1px solid var(--border); border-radius: 12px; padding: 0.7rem 0.85rem;
+  .q-list-item { background: #fffaf0; border: 1px solid var(--border); border-radius: 12px; padding: 0.7rem 0.85rem;
     display: flex; align-items: flex-start; gap: 0.75rem; }
   .q-list-item-main { flex: 1; font-size: 0.88rem; }
   .q-list-item-main .q-text { color: var(--text); margin-bottom: 2px; font-weight: 500; }
@@ -307,99 +360,99 @@
   .divider { border: none; border-top: 1px solid var(--border); margin: 1.25rem 0; }
 
   /* ============================================================
-     GAME PAGE — "Treasure Sea Map"
+     GAME PAGE — "Enchanted Battle Board"
   ============================================================ */
   #page-game { flex-direction: row; height: 100vh; overflow: hidden; }
   .game-board { flex: 1; display: flex; flex-direction: column; padding: 1.5rem; overflow: hidden; }
 
   .game-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.1rem; gap: 1rem; flex-wrap: wrap; }
-  .game-header h2 { font-size: 1.15rem; font-weight: 700; color: #fff; text-shadow: 0 2px 8px rgba(10,44,71,0.7);
+  .game-header h2 { font-size: 1.15rem; font-weight: 700; color: #fff; text-shadow: 0 0 14px rgba(183,156,255,0.8), 0 2px 8px rgba(15,10,34,0.8);
     display: flex; align-items: center; gap: 0.5rem; }
-  .game-header h2::before { content:'🗺️'; }
-  /* "Fleet X is choosing destination" badge */
+  .game-header h2::before { content:'🏰'; }
+  /* "House X is casting" badge */
   .turn-badge { background: linear-gradient(180deg, var(--gold), var(--gold-deep)); color: var(--deep);
     border: 2px solid #fff3; border-radius: 100px; padding: 0.5rem 1.1rem; font-size: 0.95rem; font-weight: 700;
-    display: flex; align-items: center; gap: 0.55rem; box-shadow: 0 8px 20px -8px rgba(212,169,90,0.8); }
+    display: flex; align-items: center; gap: 0.55rem; box-shadow: 0 0 24px -4px rgba(212,169,90,0.8); }
   .turn-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--deep);
-    box-shadow: 0 0 0 4px rgba(14,58,93,0.25); animation: pulse 1.6s ease-in-out infinite; }
+    box-shadow: 0 0 0 4px rgba(26,16,51,0.25); animation: pulse 1.6s ease-in-out infinite; }
   @keyframes pulse { 0%,100% { transform: scale(1); opacity: 1; } 50% { transform: scale(0.6); opacity: 0.6; } }
 
   .categories-header { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.75rem; margin-bottom: 0.75rem; }
   .cat-head { text-align: center; font-size: 0.85rem; font-weight: 700; padding: 0.6rem; border-radius: 12px;
     color: #fff; border: 1px solid rgba(255,255,255,0.25); display:flex; align-items:center; justify-content:center; gap:0.35rem; }
-  .cat-30 { background: rgba(63,151,214,0.55); }
-  .cat-50 { background: rgba(42,122,185,0.6); }
-  .cat-70 { background: rgba(217,154,60,0.65); }
-  .cat-100 { background: rgba(194,104,58,0.6); }
-  .cat-30::before { content:'🏝️'; } .cat-50::before { content:'⚓'; }
-  .cat-70::before { content:'🏯'; } .cat-100::before { content:'🏰'; }
+  .cat-30 { background: rgba(91,127,224,0.6); }
+  .cat-50 { background: rgba(47,158,114,0.6); }
+  .cat-70 { background: rgba(201,150,46,0.7); }
+  .cat-100 { background: rgba(181,48,47,0.65); }
+  .cat-30::before { content:'🕯️'; } .cat-50::before { content:'🧪'; }
+  .cat-70::before { content:'📜'; } .cat-100::before { content:'🐉'; }
 
-  /* the sea map board */
+  /* the enchanted board */
   .board-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.85rem; flex: 1;
     padding: 1rem; border-radius: 20px; position: relative;
     background:
-      radial-gradient(circle at 18% 30%, rgba(110,185,255,0.18), transparent 30%),
-      radial-gradient(circle at 80% 70%, rgba(110,185,255,0.16), transparent 28%),
-      rgba(8,38,62,0.5);
-    border: 2px solid rgba(212,169,90,0.45);
-    box-shadow: inset 0 0 60px rgba(8,38,62,0.6);
+      radial-gradient(circle at 18% 30%, rgba(183,156,255,0.16), transparent 30%),
+      radial-gradient(circle at 80% 70%, rgba(212,169,90,0.12), transparent 28%),
+      rgba(15,10,34,0.62);
+    border: 2px solid rgba(212,169,90,0.5);
+    box-shadow: inset 0 0 60px rgba(15,10,34,0.7), 0 0 30px -8px rgba(183,156,255,0.4);
     overflow: hidden;
   }
-  /* island tiles */
+  /* spell tiles */
   .board-cell { border-radius: 18px; display: flex; flex-direction: column; align-items: center; justify-content: center;
     cursor: pointer; font-size: 2.5rem; font-weight: 700; transition: transform 0.18s, box-shadow 0.18s, filter 0.18s;
     position: relative; min-height: 78px; color: #fff; overflow: hidden;
-    background: linear-gradient(180deg, rgba(255,255,255,0.12), rgba(255,255,255,0)); border: 2px solid rgba(255,255,255,0.22);
+    background: linear-gradient(180deg, rgba(255,255,255,0.12), rgba(255,255,255,0)); border: 2px solid rgba(255,255,255,0.25);
     animation: float 5s ease-in-out infinite; }
-  .board-cell::after { content:'⚓'; position:absolute; bottom: 6px; font-size: 0.7rem; opacity: 0.55; }
+  .board-cell::after { content:'✦'; position:absolute; bottom: 6px; font-size: 0.7rem; opacity: 0.6; color: #ffe9a8; }
   @keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
 
-  /* each score = a different island type via background icon */
-  .board-cell.score-30 { background: radial-gradient(circle at 50% 120%, #7fc1ea, var(--c30)); }
-  .board-cell.score-50 { background: radial-gradient(circle at 50% 120%, #4c97cf, var(--c50)); }
-  .board-cell.score-70 { background: radial-gradient(circle at 50% 120%, #e7bb6e, var(--c70)); color: var(--deep); }
-  .board-cell.score-100 { background: radial-gradient(circle at 50% 120%, #db9264, var(--c100)); }
-  .board-cell.score-30::before { content:'🏝️'; }
-  .board-cell.score-50::before { content:'⚓'; }
-  .board-cell.score-70::before { content:'🏯'; }
-  .board-cell.score-100::before { content:'🏰'; }
-  .board-cell::before { font-size: 1.35rem; line-height: 1; margin-bottom: 2px; filter: drop-shadow(0 2px 2px rgba(0,0,0,0.25)); }
+  /* each score = a different spell tier */
+  .board-cell.score-30 { background: radial-gradient(circle at 50% 120%, #8fa8f0, var(--c30)); }
+  .board-cell.score-50 { background: radial-gradient(circle at 50% 120%, #5fc79c, var(--c50)); }
+  .board-cell.score-70 { background: radial-gradient(circle at 50% 120%, #ecc377, var(--c70)); color: var(--deep); }
+  .board-cell.score-100 { background: radial-gradient(circle at 50% 120%, #e0705e, var(--c100)); }
+  .board-cell.score-30::before { content:'🕯️'; }
+  .board-cell.score-50::before { content:'🧪'; }
+  .board-cell.score-70::before { content:'📜'; }
+  .board-cell.score-100::before { content:'🐉'; }
+  .board-cell::before { font-size: 1.35rem; line-height: 1; margin-bottom: 2px; filter: drop-shadow(0 2px 2px rgba(0,0,0,0.3)); }
 
   .board-cell:hover:not(.used):not(.revealed) { transform: scale(1.05) translateY(-3px);
-    box-shadow: 0 16px 30px -12px rgba(8,38,62,0.8); filter: brightness(1.08); animation-play-state: paused; }
+    box-shadow: 0 0 26px 2px rgba(212,169,90,0.6), 0 16px 30px -12px rgba(15,10,34,0.9); filter: brightness(1.1); animation-play-state: paused; }
 
-  /* captured island */
+  /* spent spell */
   .board-cell.used { cursor: not-allowed; pointer-events: none; animation: none;
-    background: rgba(14,58,93,0.55) !important; color: rgba(255,255,255,0.4); border-style: dashed; border-color: rgba(212,169,90,0.5); }
+    background: rgba(26,16,51,0.6) !important; color: rgba(255,255,255,0.4); border-style: dashed; border-color: rgba(212,169,90,0.5); }
   .board-cell.used::before { opacity: 0.25; }
-  .board-cell.used::after { content:'🏴'; font-size: 1.1rem; opacity: 1; bottom: auto; top: 6px; }
+  .board-cell.used::after { content:'💫'; font-size: 1.1rem; opacity: 1; bottom: auto; top: 6px; }
   .board-cell.revealed { opacity: 0.45; cursor: not-allowed; pointer-events: none; border-style: dashed; animation: none; }
 
   /* ============================================================
-     SCORE SIDEBAR — "Fleet Ranking Board"
+     SCORE SIDEBAR — "House Points"
   ============================================================ */
   .score-sidebar { width: 250px; background: var(--deep); border-left: 3px solid var(--gold);
     padding: 1.35rem 1.1rem; display: flex; flex-direction: column; gap: 0.7rem; overflow-y: auto; flex-shrink: 0; }
   .score-sidebar h3 { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.12em; color: var(--gold);
     margin-bottom: 0.4rem; display: flex; align-items: center; gap: 0.4rem; }
-  .score-sidebar h3::before { content:'🚩'; }
+  .score-sidebar h3::before { content:'🏆'; }
 
   .score-card { background: rgba(255,255,255,0.06); border: 2px solid rgba(255,255,255,0.12); border-radius: 16px;
     padding: 0.85rem 1rem; cursor: pointer; transition: all 0.18s; position: relative; }
   .score-card:hover { border-color: rgba(212,169,90,0.6); background: rgba(255,255,255,0.1); }
   .score-card.current-turn { border-color: var(--gold); background: rgba(212,169,90,0.2);
-    box-shadow: 0 0 0 3px rgba(212,169,90,0.25), 0 12px 26px -12px rgba(212,169,90,0.6); }
-  .score-card.current-turn::after { content:'⚓ บัญชาการ'; position: absolute; top: -10px; right: 10px;
+    box-shadow: 0 0 0 3px rgba(212,169,90,0.25), 0 12px 26px -12px rgba(212,169,90,0.7); }
+  .score-card.current-turn::after { content:'🪄 ถึงตาร่ายเวท'; position: absolute; top: -10px; right: 10px;
     background: var(--gold); color: var(--deep); font-size: 0.62rem; font-weight: 700; padding: 2px 8px; border-radius: 100px; }
   .score-card-top { display: flex; align-items: center; gap: 0.55rem; margin-bottom: 0.5rem; }
-  /* captain badge / ship flag (was .team-color dot) */
-  .team-color { width: 26px !important; height: 26px !important; border-radius: 8px !important; flex-shrink: 0;
-    box-shadow: inset 0 -3px 0 rgba(0,0,0,0.22); position: relative; }
-  .team-color::after { content:'⛵'; position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-size:0.78rem; }
-  .score-card-name { font-size: 0.92rem; font-weight: 600; flex: 1; color: #eaf4ff;
+  /* house crest (was .team-color dot) */
+  .team-color { width: 26px !important; height: 26px !important; border-radius: 7px 7px 13px 13px !important; flex-shrink: 0;
+    box-shadow: inset 0 -3px 0 rgba(0,0,0,0.25); position: relative; }
+  .team-color::after { content:'✨'; position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-size:0.72rem; }
+  .score-card-name { font-size: 0.92rem; font-weight: 600; flex: 1; color: #efe8ff;
     overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .score-val { font-size: 2rem; font-weight: 700; color: var(--gold); line-height: 1; }
-  .score-rank { font-size: 0.7rem; color: #9fb8cc; }
+  .score-val { font-size: 2rem; font-weight: 700; color: var(--gold); line-height: 1; text-shadow: 0 0 12px rgba(212,169,90,0.5); }
+  .score-rank { font-size: 0.7rem; color: #a99cc4; }
 
   .btn-end-game { margin-top: auto; padding: 0.75rem; background: rgba(217,83,79,0.15);
     border: 2px solid rgba(217,83,79,0.5); color: #ffb3b0; border-radius: 12px; font-size: 0.9rem; font-weight: 600;
@@ -407,18 +460,18 @@
   .btn-end-game:hover { background: rgba(217,83,79,0.3); color: #fff; }
 
   /* ============================================================
-     QUESTION MODAL — "Mission Briefing"
+     QUESTION MODAL — "Spell Scroll"
   ============================================================ */
   .q-modal { border: 2px solid var(--gold); border-radius: 24px; padding: 2.25rem; width: 660px;
-    max-width: 95vw; max-height: 90vh; overflow-y: auto; box-shadow: 0 36px 80px -28px rgba(10,44,71,0.9);
+    max-width: 95vw; max-height: 90vh; overflow-y: auto; box-shadow: 0 36px 80px -28px rgba(0,0,0,0.95), 0 0 50px -10px rgba(183,156,255,0.5);
     background:
-      repeating-linear-gradient(0deg, rgba(212,169,90,0.04) 0 28px, transparent 28px 56px),
+      repeating-linear-gradient(0deg, rgba(212,169,90,0.05) 0 28px, transparent 28px 56px),
       var(--surface); }
   .q-modal-score-badge { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.45rem 1.1rem;
     border-radius: 100px; font-size: 0.95rem; font-weight: 700; margin-bottom: 1.35rem; border: 1px solid rgba(0,0,0,0.06); }
   .q-modal-question { font-size: 1.45rem; font-weight: 600; line-height: 1.55; margin-bottom: 1.6rem;
     color: var(--deep); text-align: center; }
-  .answer-section { background: #fff; border: 2px solid var(--gold); border-radius: 14px; padding: 1.1rem 1.35rem;
+  .answer-section { background: #fffaf0; border: 2px solid var(--gold); border-radius: 14px; padding: 1.1rem 1.35rem;
     transition: filter 0.3s; }
   .answer-section.hidden-ans { user-select: none; }
   .answer-label { font-size: 0.74rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--gold-deep);
@@ -429,23 +482,23 @@
     padding: 0.4rem 0; letter-spacing: 0.02em; }
   .q-modal-actions { display: flex; gap: 0.75rem; margin-top: 1.35rem; flex-wrap: wrap; }
 
-  .score-edit-section { background: #fff; border: 2px dashed var(--gold); border-radius: 14px;
+  .score-edit-section { background: #fffaf0; border: 2px dashed var(--gold); border-radius: 14px;
     padding: 1.1rem 1.35rem; margin-top: 1.1rem; }
   .score-edit-title { font-size: 0.85rem; color: var(--text2); margin-bottom: 0.75rem; font-weight: 500; }
   .score-edit-title::before { content:'🏆 '; }
   .score-display { font-size: 3rem; font-weight: 700; text-align: center; margin: 0.5rem 0; color: var(--gold-deep);
     text-shadow: 0 2px 0 rgba(212,169,90,0.25); }
   .score-multipliers { display: flex; gap: 0.5rem; justify-content: center; margin-bottom: 0.85rem; }
-  .mult-btn { padding: 0.45rem 1rem; border-radius: 12px; border: 2px solid var(--border2); background: #fff;
+  .mult-btn { padding: 0.45rem 1rem; border-radius: 12px; border: 2px solid var(--border2); background: #fffaf0;
     color: var(--text2); cursor: pointer; font-size: 0.9rem; font-weight: 600; transition: all 0.15s; font-family: inherit; }
   .mult-btn:hover { background: var(--surface2); color: var(--deep); }
-  .mult-btn.active { border-color: var(--gold); color: var(--gold-deep); background: rgba(212,169,90,0.18); }
+  .mult-btn.active { border-color: var(--gold); color: var(--gold-deep); background: rgba(212,169,90,0.22); }
   .team-select-section { margin-top: 0.85rem; }
   .team-select-title { font-size: 0.85rem; color: var(--text2); margin-bottom: 0.55rem; font-weight: 500; }
   .team-select-grid { display: flex; flex-wrap: wrap; gap: 0.45rem; }
-  .team-select-btn { padding: 0.45rem 0.9rem; border-radius: 100px; border: 2px solid var(--border2); background: #fff;
+  .team-select-btn { padding: 0.45rem 0.9rem; border-radius: 100px; border: 2px solid var(--border2); background: #fffaf0;
     color: var(--text2); cursor: pointer; font-size: 0.85rem; font-weight: 600; transition: all 0.15s; font-family: inherit; }
-  .team-select-btn.selected { color: #fff; border-color: transparent; box-shadow: 0 6px 14px -6px rgba(0,0,0,0.4); }
+  .team-select-btn.selected { color: #fff; border-color: transparent; box-shadow: 0 6px 14px -6px rgba(0,0,0,0.5); }
 
   .btn-award { padding: 0.7rem 1.4rem; border-radius: 12px; background: linear-gradient(180deg, #2bbd84, var(--green));
     color: #fff; border: none; font-size: 1.1rem; font-weight: 500; cursor: pointer; transition: all 0.15s; font-family: inherit;
@@ -460,31 +513,31 @@
   .btn-close-q:hover { background: var(--surface2); color: var(--deep); }
 
   /* ============================================================
-     TEAM COLORS (fleet banners)
+     TEAM COLORS (house colors)
   ============================================================ */
-  .tc-0 { background: #2A7AB9; }
-  .tc-1 { background: #1f9e6e; }
-  .tc-2 { background: #D4A95A; }
-  .tc-3 { background: #d9534f; }
-  .tc-4 { background: #6EB9FF; }
+  .tc-0 { background: #b3262e; }
+  .tc-1 { background: #1f8a5b; }
+  .tc-2 { background: #2f6bd1; }
+  .tc-3 { background: #c28a14; }
+  .tc-4 { background: #7a45c4; }
 
   /* ============================================================
-     END GAME — "Sea Celebration / Admiral Podium"
+     END GAME — "House Cup Ceremony"
   ============================================================ */
   #page-end { align-items: center; justify-content: center; padding: 2rem; }
   .end-card { border: 2px solid var(--gold); border-radius: 26px; padding: 2.75rem 2.5rem; max-width: 540px; width: 100%;
-    text-align: center; position: relative; overflow: hidden; box-shadow: 0 36px 80px -28px rgba(10,44,71,0.9); }
-  .end-card::before { content:'⚓'; position: absolute; top: -20px; left: -20px; font-size: 7rem; opacity: 0.06; transform: rotate(-18deg); }
+    text-align: center; position: relative; overflow: hidden; box-shadow: 0 36px 80px -28px rgba(0,0,0,0.95), 0 0 60px -10px rgba(212,169,90,0.5); }
+  .end-card::before { content:'✨'; position: absolute; top: -20px; left: -20px; font-size: 7rem; opacity: 0.08; transform: rotate(-18deg); }
   .end-card h1 { font-size: 2rem; font-weight: 700; margin-bottom: 0.5rem; color: var(--deep); }
   .winner-badge { background: linear-gradient(180deg, #fbe9c2, rgba(212,169,90,0.25)); border: 2px solid var(--gold);
     border-radius: 18px; padding: 1.35rem; margin: 1.4rem 0; position: relative; }
-  .winner-badge::before { content:'🏅'; font-size: 2.4rem; display:block; margin-bottom: 0.3rem; }
+  .winner-badge::before { content:'🏆'; font-size: 2.4rem; display:block; margin-bottom: 0.3rem; }
   .winner-badge .w-label { font-size: 0.78rem; color: var(--gold-deep); text-transform: uppercase; letter-spacing: 0.12em; font-weight: 700; }
   .winner-badge .w-name { font-size: 1.8rem; font-weight: 700; color: var(--deep); margin: 0.2rem 0; }
   .winner-badge .w-score { font-size: 1.05rem; color: var(--text2); font-weight: 600; }
   .final-scores { display: grid; gap: 0.55rem; margin-bottom: 1.6rem; }
   .final-score-row { display: flex; align-items: center; justify-content: space-between; padding: 0.7rem 0.85rem;
-    background: #fff; border: 1px solid var(--border); border-radius: 12px; font-size: 0.95rem; }
+    background: #fffaf0; border: 1px solid var(--border); border-radius: 12px; font-size: 0.95rem; }
   .final-score-row .rank { color: var(--text2); width: 26px; font-size: 1.1rem; }
   .final-score-row .name { flex: 1; margin-left: 0.6rem; font-weight: 600; color: var(--deep); }
   .final-score-row .pts { font-weight: 700; }
@@ -493,7 +546,7 @@
      SCORE EDIT
   ============================================================ */
   .score-adjust-row { display: flex; align-items: center; gap: 0.75rem; }
-  .score-adjust-row input[type=number] { width: 120px; background: #fff; border: 2px solid var(--border2);
+  .score-adjust-row input[type=number] { width: 120px; background: #fffaf0; border: 2px solid var(--border2);
     color: var(--text); border-radius: 12px; padding: 0.55rem 0.85rem; font-size: 1rem; outline: none; font-family: inherit; }
   .score-adjust-row input:focus { border-color: var(--sea); }
 
@@ -503,7 +556,7 @@
   .toast { position: fixed; bottom: 1.5rem; left: 50%; transform: translateX(-50%) translateY(20px);
     background: var(--deep); border: 2px solid var(--gold); border-radius: 100px; padding: 0.65rem 1.4rem;
     font-size: 0.92rem; font-weight: 600; color: var(--parch); opacity: 0; transition: all 0.3s; pointer-events: none;
-    z-index: 999; white-space: nowrap; box-shadow: 0 16px 30px -14px rgba(10,44,71,0.8); }
+    z-index: 999; white-space: nowrap; box-shadow: 0 0 30px -6px rgba(212,169,90,0.6); }
   .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
   /* ============================================================
@@ -524,33 +577,70 @@
 </head>
 <body>
 
-<!-- OCEAN BACKGROUND -->
-<div class="ocean-bg">
-  <div class="cloud c1"></div>
-  <div class="cloud c2"></div>
-  <div class="cloud c3"></div>
+<!-- NIGHT SKY BACKGROUND -->
+<div class="sky-bg">
+  <div class="stars"></div>
+  <div class="stars s2"></div>
+  <div class="moon"></div>
+  <div class="candle" style="left:8%;top:22%;--d:0s"></div>
+  <div class="candle" style="left:18%;top:38%;--d:-1.5s"></div>
+  <div class="candle" style="left:30%;top:16%;--d:-3s"></div>
+  <div class="candle" style="left:46%;top:30%;--d:-4.2s"></div>
+  <div class="candle" style="left:62%;top:14%;--d:-2.2s"></div>
+  <div class="candle" style="left:74%;top:34%;--d:-0.8s"></div>
+  <div class="candle" style="left:88%;top:24%;--d:-3.6s"></div>
 </div>
-<svg class="compass-deco" viewBox="0 0 100 100" fill="none" stroke="#F5F0DD" stroke-width="1.5" aria-hidden="true">
-  <circle cx="50" cy="50" r="46"/><circle cx="50" cy="50" r="38"/>
-  <path d="M50 6 L57 50 L50 94 L43 50 Z" fill="#D4A95A" stroke="none"/>
-  <path d="M6 50 L50 43 L94 50 L50 57 Z" fill="#F5F0DD" stroke="none" opacity="0.6"/>
-  <circle cx="50" cy="50" r="4" fill="#D4A95A" stroke="none"/>
-</svg>
-<svg class="compass-deco left" viewBox="0 0 100 100" fill="none" stroke="#F5F0DD" stroke-width="2" aria-hidden="true">
-  <circle cx="50" cy="50" r="46"/>
-  <path d="M50 10 L58 50 L50 90 L42 50 Z" fill="#D4A95A" stroke="none"/>
-</svg>
-<div class="waves" aria-hidden="true">
-  <svg class="wave-1" viewBox="0 0 1200 120" preserveAspectRatio="none"><path d="M0,60 C150,100 350,0 600,40 C850,80 1050,10 1200,50 L1200,120 L0,120 Z"/></svg>
-  <svg class="wave-2" viewBox="0 0 1200 120" preserveAspectRatio="none"><path d="M0,70 C200,30 400,90 600,60 C800,30 1000,90 1200,60 L1200,120 L0,120 Z"/></svg>
-  <svg class="wave-3" viewBox="0 0 1200 120" preserveAspectRatio="none"><path d="M0,80 C250,110 450,50 700,80 C950,110 1100,60 1200,85 L1200,120 L0,120 Z"/></svg>
+
+<!-- CASTLE SILHOUETTE -->
+<div class="castle" aria-hidden="true">
+  <svg viewBox="0 0 1200 300" preserveAspectRatio="xMidYMax slice">
+    <g fill="#0a0618">
+      <path d="M0,300 L0,262 C200,236 400,250 600,238 C800,226 1000,250 1200,258 L1200,300 Z"/>
+      <rect x="420" y="170" width="360" height="130"/>
+      <rect x="560" y="80" width="80" height="220"/><polygon points="550,80 600,8 650,80"/>
+      <rect x="440" y="120" width="50" height="180"/><polygon points="432,120 465,58 498,120"/>
+      <rect x="710" y="110" width="56" height="190"/><polygon points="702,110 738,44 774,110"/>
+      <rect x="300" y="190" width="60" height="110"/><polygon points="292,190 330,138 368,190"/>
+      <rect x="200" y="222" width="50" height="78"/><polygon points="194,222 225,186 256,222"/>
+      <rect x="840" y="195" width="60" height="105"/><polygon points="832,195 870,143 908,195"/>
+      <rect x="950" y="226" width="50" height="74"/><polygon points="944,226 975,190 1006,226"/>
+      <rect x="520" y="150" width="20" height="30"/><polygon points="516,150 530,120 544,150"/>
+      <rect x="660" y="140" width="22" height="40"/><polygon points="656,140 671,108 686,140"/>
+    </g>
+    <g>
+      <rect class="win" x="594" y="110" width="12" height="20" rx="6"/>
+      <rect class="win" x="594" y="160" width="12" height="20" rx="6"/>
+      <rect class="win" x="458" y="150" width="14" height="22" rx="7"/>
+      <rect class="win" x="726" y="140" width="14" height="22" rx="7"/>
+      <rect class="win" x="450" y="210" width="10" height="16"/>
+      <rect class="win" x="470" y="210" width="10" height="16"/>
+      <rect class="win" x="620" y="210" width="10" height="16"/>
+      <rect class="win" x="740" y="210" width="10" height="16"/>
+      <rect class="win" x="322" y="220" width="12" height="18" rx="6"/>
+      <rect class="win" x="862" y="226" width="12" height="18" rx="6"/>
+      <rect class="win" x="219" y="248" width="10" height="16" rx="5"/>
+      <rect class="win" x="969" y="252" width="10" height="16" rx="5"/>
+    </g>
+  </svg>
 </div>
+
+<!-- MIST + RUNE CIRCLES -->
+<div class="fog" aria-hidden="true"><div></div><div></div></div>
+<svg class="compass-deco" viewBox="0 0 100 100" fill="none" stroke="#F3E7C9" stroke-width="1" aria-hidden="true">
+  <circle cx="50" cy="50" r="46"/><circle cx="50" cy="50" r="40"/><circle cx="50" cy="50" r="26" stroke-dasharray="2 3"/>
+  <polygon points="50,12 59,38 87,38 64,54 73,82 50,66 27,82 36,54 13,38 41,38" stroke="#D4A95A" stroke-width="1.4"/>
+  <circle cx="50" cy="50" r="3" fill="#D4A95A" stroke="none"/>
+</svg>
+<svg class="compass-deco left" viewBox="0 0 100 100" fill="none" stroke="#F3E7C9" stroke-width="1.5" aria-hidden="true">
+  <circle cx="50" cy="50" r="46"/><circle cx="50" cy="50" r="36" stroke-dasharray="1 4"/>
+  <path d="M50 14 L82 68 L18 68 Z" stroke="#D4A95A"/><path d="M50 86 L18 32 L82 32 Z" stroke="#D4A95A"/>
+</svg>
 
 <!-- LAUNCH PAGE -->
 <div id="page-launch" class="page active">
   <div style="max-width:760px;margin:0 auto;width:100%;padding:2rem;">
     <div class="launch-nav">
-      <button class="btn-secondary" onclick="showSettings()">🧭 ห้องยุทธศาสตร์</button>
+      <button class="btn-secondary" onclick="showSettings()">📖 หอคัมภีร์</button>
     </div>
     <div class="hq-banner">
       <div class="hq-flags">
@@ -558,25 +648,25 @@
         <span class="pennant f3"></span><span class="pennant f4"></span><span class="pennant f5"></span>
       </div>
       <div class="launch-header">
-        <span class="eyebrow">MARINE HEADQUARTERS</span>
-        <h1>กองบัญชาการ <span>กองเรือ</span></h1>
-        <p>เลือกชุดภารกิจ จัดกองเรือ แล้วออกเดินทางพิชิตหมู่เกาะ</p>
-        <span class="wave-sep"></span>
+        <span class="eyebrow">MAGIC ACADEMY</span>
+        <h1>ศึกประลอง <span>เวทมนตร์</span></h1>
+        <p>เลือกคัมภีร์คำถาม รวบรวมทีมพ่อมดแม่มด แล้วร่ายเวทพิชิตทุกด่าน</p>
+        <span class="wave-sep">✦</span>
       </div>
     </div>
 
     <div class="hq-deck">
       <div class="launch-card">
-        <h3>กระดานเลือกภารกิจ</h3>
+        <h3>เลือกคัมภีร์คำถาม</h3>
         <select id="qset-select" class="qset-select">
           <option value="">— เลือกชุดคำถาม —</option>
         </select>
       </div>
 
       <div class="launch-card">
-        <h3>จัดกองเรือ</h3>
+        <h3>รวบรวมทีมพ่อมดแม่มด</h3>
         <div class="team-count-row">
-          <label>จำนวนกองเรือ:</label>
+          <label>จำนวนบ้าน:</label>
           <div class="count-btns" id="count-btns">
             <button class="count-btn active" onclick="setTeamCount(2)" data-n="2">2</button>
             <button class="count-btn" onclick="setTeamCount(3)" data-n="3">3</button>
@@ -587,7 +677,7 @@
         <div class="team-names-grid" id="team-names-grid"></div>
       </div>
 
-      <button class="btn-primary" id="btn-start" onclick="startGame()">⚓ ออกเรือ</button>
+      <button class="btn-primary" id="btn-start" onclick="startGame()">🪄 เริ่มพิธีประลอง</button>
     </div>
   </div>
 </div>
@@ -596,10 +686,10 @@
 <div id="page-settings" class="page">
   <div class="settings-layout">
     <div class="settings-sidebar">
-      <h2>ห้องเดินเรือ</h2>
+      <h2>หอคัมภีร์</h2>
       <div class="sidebar-item active" onclick="showSettingsTab('qsets')">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
-        แผนที่ภารกิจ
+        คัมภีร์คำถาม
       </div>
     </div>
     <div class="settings-content">
@@ -607,9 +697,9 @@
         <div class="settings-topbar">
           <button class="back-btn" onclick="showLaunch()">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
-            กลับกองบัญชาการ
+            กลับหอใหญ่
           </button>
-          <h2>แผนที่ภารกิจ</h2>
+          <h2>คัมภีร์คำถาม</h2>
           <button class="btn-small" onclick="downloadExcelTemplate()" title="ดาวโหลด Template Excel">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
             Template
@@ -622,7 +712,7 @@
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
             Import JSON
           </button>
-          <button class="btn-small accent" onclick="openCreateQSet()">+ สร้างแผนที่ใหม่</button>
+          <button class="btn-small accent" onclick="openCreateQSet()">+ เขียนคัมภีร์ใหม่</button>
         </div>
         <div id="qset-list" class="qset-list"></div>
       </div>
@@ -636,34 +726,34 @@
 <div id="page-game" class="page">
   <div class="game-board">
     <div class="game-header">
-      <h2 id="game-title">Treasure Sea Map</h2>
+      <h2 id="game-title">ศึกประลองเวทมนตร์</h2>
       <div class="turn-badge">
         <div class="turn-dot"></div>
         <span id="turn-label">ทีม 1 เลือกคำถาม</span>
       </div>
     </div>
     <div class="categories-header">
-      <div class="cat-head cat-30">30 — เกาะเล็ก</div>
-      <div class="cat-head cat-50">50 — ท่าเรือ</div>
-      <div class="cat-head cat-70">70 — ป้อมปราการ</div>
-      <div class="cat-head cat-100">100 — มหาป้อม</div>
+      <div class="cat-head cat-30">30 — คาถาเบื้องต้น</div>
+      <div class="cat-head cat-50">50 — น้ำยาวิเศษ</div>
+      <div class="cat-head cat-70">70 — คัมภีร์โบราณ</div>
+      <div class="cat-head cat-100">100 — มหาเวทมังกร</div>
     </div>
     <div class="board-grid" id="board-grid"></div>
   </div>
   <div class="score-sidebar">
-    <h3>อันดับกองเรือ</h3>
+    <h3>แต้มสะสมของบ้าน</h3>
     <div id="score-cards"></div>
-    <button class="btn-end-game" onclick="endGame()" style="margin-top:1rem">🏁 จบการเดินทาง</button>
+    <button class="btn-end-game" onclick="endGame()" style="margin-top:1rem">🏁 จบการประลอง</button>
   </div>
 </div>
 
 <!-- END PAGE -->
 <div id="page-end" class="page">
   <div class="end-card">
-    <h1>⚓ สิ้นสุดการเดินทาง!</h1>
+    <h1>🏆 สิ้นสุดการประลอง!</h1>
     <div class="winner-badge" id="winner-display"></div>
     <div class="final-scores" id="final-scores"></div>
-    <button class="btn-primary" onclick="showLaunch()" style="max-width:240px;margin:0 auto">กลับกองบัญชาการ</button>
+    <button class="btn-primary" onclick="showLaunch()" style="max-width:240px;margin:0 auto">กลับหอใหญ่</button>
   </div>
 </div>
 
@@ -685,7 +775,7 @@ let state = {
   qsetName: '',
 };
 
-const TEAM_COLORS = ['#2A7AB9','#1f9e6e','#D4A95A','#d9534f','#6EB9FF'];
+const TEAM_COLORS = ['#b3262e','#1f8a5b','#2f6bd1','#c28a14','#7a45c4'];
 const SCORE_CATS = [30, 50, 70, 100];
 
 // ========================
@@ -710,7 +800,7 @@ function showSettingsTab(t) { showPage('settings'); }
 // LAUNCH
 // ========================
 let teamCount = 2;
-let teamNames = ['ทีม 1','ทีม 2','ทีม 3','ทีม 4','ทีม 5'];
+let teamNames = ['บ้านฟีนิกซ์','บ้านมังกร','บ้านยูนิคอร์น','บ้านกริฟฟิน','บ้านนกเค้าแมว'];
 
 function setTeamCount(n) {
   teamCount = n;
@@ -863,8 +953,8 @@ function openQuestion(idx) {
   if (!q || q.used || q.revealed) return;
 
   const colorMap = { 30: 'tag-30', 50: 'tag-50', 70: 'tag-70', 100: 'tag-100' };
-  const bgMap = { 30: 'rgba(63,151,214,0.25)', 50: 'rgba(42,122,185,0.25)', 70: 'rgba(217,154,60,0.25)', 100: 'rgba(194,104,58,0.25)' };
-  const txMap = { 30: '#3f97d6', 50: '#2A7AB9', 70: '#b3863a', 100: '#c2683a' };
+  const bgMap = { 30: 'rgba(91,127,224,0.25)', 50: 'rgba(47,158,114,0.25)', 70: 'rgba(201,150,46,0.28)', 100: 'rgba(181,48,47,0.22)' };
+  const txMap = { 30: '#4a68c8', 50: '#238058', 70: '#a97b2c', 100: '#b5302f' };
 
   let multiplier = 1;
   let selectedTeams = [state.currentTurn];
@@ -895,7 +985,7 @@ function openQuestion(idx) {
 
         ${revealed ? '' : `
           <div class="q-modal-actions">
-            <button class="btn-reveal" onclick="revealAnswer(${idx})">🧭 เปิดเฉลย</button>
+            <button class="btn-reveal" onclick="revealAnswer(${idx})">🔮 เปิดเฉลย</button>
             <button class="btn-close-q" onclick="closeQModal()">ปิด</button>
           </div>
         `}
@@ -921,8 +1011,8 @@ function openQuestion(idx) {
             </div>
           </div>
           <div class="q-modal-actions" style="margin-top:1rem">
-            <button class="btn-award" onclick="awardScore(${idx})">🚩 มอบรางวัล</button>
-            <button class="btn-close-q" onclick="closeAndNext(${idx})">⚓ ออกเดินทางต่อ</button>
+            <button class="btn-award" onclick="awardScore(${idx})">🏆 มอบรางวัล</button>
+            <button class="btn-close-q" onclick="closeAndNext(${idx})">🪄 ไปต่อ</button>
           </div>
         ` : ''}
       </div>
@@ -969,7 +1059,7 @@ function openQuestion(idx) {
     renderBoard();
     renderScoreCards();
     nextTurn();
-    toast(`+${perTeam} คะแนน ${selectedTeams.length > 1 ? `(${selectedTeams.length} ทีม)` : ''}`);
+    toast(`✨ +${perTeam} คะแนน ${selectedTeams.length > 1 ? `(${selectedTeams.length} ทีม)` : ''}`);
   };
 
   window.closeQModal = function() {
@@ -1024,8 +1114,8 @@ function openQuestion(idx) {
         </div>
       </div>
       <div class="q-modal-actions" style="margin-top:1rem">
-        <button class="btn-award" onclick="awardScore(${qIdx})">🚩 มอบรางวัล</button>
-        <button class="btn-close-q" onclick="closeAndNext(${qIdx})">⚓ ออกเดินทางต่อ</button>
+        <button class="btn-award" onclick="awardScore(${qIdx})">🏆 มอบรางวัล</button>
+        <button class="btn-close-q" onclick="closeAndNext(${qIdx})">🪄 ไปต่อ</button>
       </div>
     `;
   }
@@ -1072,11 +1162,11 @@ function saveScoreEdit(teamIdx, btn) {
 // END GAME
 // ========================
 function endGame() {
-  if (!confirm('จบเกมและดูผลการแข่งขัน?')) return;
+  if (!confirm('จบการประลองและดูผลการแข่งขัน?')) return;
   const sorted = [...state.teams].sort((a, b) => b.score - a.score);
   const winner = sorted[0];
   document.getElementById('winner-display').innerHTML = `
-    <div class="w-label">🥇 พลเรือเอกผู้พิชิต</div>
+    <div class="w-label">🥇 บ้านผู้พิชิตถ้วยเวทมนตร์</div>
     <div class="w-name">${escHtml(winner.name)}</div>
     <div class="w-score">${winner.score} คะแนน</div>
   `;
@@ -1102,7 +1192,7 @@ function renderQSetList() {
     container.innerHTML = `
       <div class="empty-state">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="2"/></svg>
-        <p>ยังไม่มีชุดคำถาม<br>กดปุ่ม "+ สร้างแผนที่ใหม่" เพื่อเริ่ม</p>
+        <p>ยังไม่มีคัมภีร์คำถาม<br>กดปุ่ม "+ เขียนคัมภีร์ใหม่" เพื่อเริ่ม</p>
       </div>`;
     return;
   }
